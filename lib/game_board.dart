@@ -17,10 +17,10 @@ class GameBoard extends StatefulWidget {
     Key? key}) : super(key: key);
 
   @override
-  _GameBoardState createState() => _GameBoardState();
+  GameBoardState createState() => GameBoardState();
 }
 
-class _GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
+class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   late AnimationController _controller;
   late CurvedAnimation _moveTileAnimation;
   late AnimationController _shakeController;

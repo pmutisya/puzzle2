@@ -9,30 +9,30 @@ enum Move {
 }
 
 class GameController {
-  final Game _game;
+  final Game game;
   final List<Move> _moves;
 
   GameController.startSorted(int length) :
-    _game = Game(length),
+    game = Game(length),
     _moves = [];
 
   void move(Move move, {bool animate = false}) {
-    Point<int> p = _game.getBlankTile();
+    Point<int> p = game.getBlankTile();
     Tile tile;
     if (move == Move.left) {
-      tile = _game.getTileAt(p.x +1, p.y)!;
+      tile = game.getTileAt(p.x +1, p.y)!;
     }
     else if (move == Move.right) {
-      tile = _game.getTileAt(p.x - 1, p.y)!;
+      tile = game.getTileAt(p.x - 1, p.y)!;
     }
     else if (move == Move.down) {
-      tile = _game.getTileAt(p.x, p.y - 1)!;
+      tile = game.getTileAt(p.x, p.y - 1)!;
     }
     else {
-      tile = _game.getTileAt(p.x, p.y + 1)!;
+      tile = game.getTileAt(p.x, p.y + 1)!;
     }
-    _game.tap(tile, animate: animate);
-    _game.completeTap(animate: animate);
+    game.tap(tile, animate: animate);
+    game.completeTap(animate: animate);
 
   }
 
@@ -42,16 +42,16 @@ class GameController {
 
     for (int k = 0; k < numberOfShuffles; k++) {
       List<Move> legal = [];
-      if (_game.canMoveDown() && previousMove != Move.up) {
+      if (game.canMoveDown() && previousMove != Move.up) {
         legal.add(Move.down);
       }
-      if (_game.canMoveUp() && previousMove != Move.down) {
+      if (game.canMoveUp() && previousMove != Move.down) {
         legal.add(Move.up);
       }
-      if (_game.canMoveRight() && previousMove != Move.left) {
+      if (game.canMoveRight() && previousMove != Move.left) {
         legal.add(Move.right);
       }
-      if (_game.canMoveLeft() && previousMove != Move.right) {
+      if (game.canMoveLeft() && previousMove != Move.right) {
         legal.add(Move.left);
       }
       Move nextMove = legal[random.nextInt(legal.length)];
@@ -60,7 +60,7 @@ class GameController {
       move(nextMove, animate: animate);
     }
 
-    _game.reset();
+    game.reset();
     _moves.addAll(moves);
     return moves;
   }
@@ -70,16 +70,16 @@ class GameController {
     Move? previousMove;
     for (int k = 0; k < numberOfShuffles; k++) {
       List<Move> legal = [];
-      if (_game.canMoveDown() && !(previousMove == Move.up)) {
+      if (game.canMoveDown() && !(previousMove == Move.up)) {
         legal.add(Move.down);
       }
-      if (_game.canMoveUp() && !(previousMove == Move.down)) {
+      if (game.canMoveUp() && !(previousMove == Move.down)) {
         legal.add(Move.up);
       }
-      if (_game.canMoveRight() && !(previousMove == Move.left)) {
+      if (game.canMoveRight() && !(previousMove == Move.left)) {
         legal.add(Move.right);
       }
-      if (_game.canMoveLeft() && !(previousMove == Move.right)) {
+      if (game.canMoveLeft() && !(previousMove == Move.right)) {
         legal.add(Move.left);
       }
       Move nextMove = legal[random.nextInt(legal.length)];
