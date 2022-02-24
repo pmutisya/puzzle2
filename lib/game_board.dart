@@ -157,12 +157,12 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     MediaQueryData media = MediaQuery.of(context);
     Size size = media.size;
-    size  = Size(size.width - media.padding.hashCode, size.height - media.padding.vertical);
-    double side = size.shortestSide - 80;
+    size  = Size(size.width - media.padding.horizontal, size.height - media.padding.vertical);
+    double side = size.shortestSide - 20;
     double tileSize = side/game.columns;
 
     List<Widget> children = [];
-    Container panel = Container(color: Colors.greenAccent.withOpacity(.25),
+    Container panel = Container(color: Colors.black,
       width: side, height: side,);
     children.add(panel);
 
