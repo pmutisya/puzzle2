@@ -112,7 +112,15 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
 }
 
 void main() {
-  runApp(const MaterialApp(
-    home: GameRunner(),
+  runApp(MaterialApp(
+    title: 'Game Tester',
+    theme: ThemeData(
+      fontFamily: 'Poppins'
+    ),
+    darkTheme: ThemeData(
+      brightness: Brightness.dark,
+      fontFamily: 'Poppins'
+    ),
+    home: const GameRunner(),
   ));
 }
