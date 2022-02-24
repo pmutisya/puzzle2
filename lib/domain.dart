@@ -53,6 +53,8 @@ class Game extends ChangeNotifier {
     }
   }
 
+  ///Creates a game with the given tile order
+  ///This is useful for solving specific game states
   Game.fromValues(List<int> values):
     length = values.length,
   _tiles = List<Tile>.generate(values.length, (index) => Tile(values[index]+1, index)),
