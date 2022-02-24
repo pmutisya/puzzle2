@@ -93,7 +93,7 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
         bindings: [
           KeyAction(LogicalKeyboardKey.keyS, 'Shuffle the board', shuffle),
           KeyAction(LogicalKeyboardKey.keyR, 'Reverse solve', reverseSolve),
-          KeyAction(LogicalKeyboardKey.keyS, 'Suffle (no animation)', shuffleImmediately, isShiftPressed: true),
+          KeyAction(LogicalKeyboardKey.keyS, 'Shuffle (no animation)', shuffleImmediately, isShiftPressed: true),
         ],
         child: Stack(
           children: [

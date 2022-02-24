@@ -49,6 +49,7 @@ class TileWidget extends StatelessWidget {
     );
   }
 }
+
 class SimpleTile extends TileWidget {
 
   const SimpleTile({required Tile tile, required Game game, required  double size, Key? key}):

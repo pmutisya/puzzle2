@@ -53,7 +53,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
       }
     });
 
-    _moveTileAnimation = CurvedAnimation(parent: _controller, curve: Curves.decelerate);
+    _moveTileAnimation = CurvedAnimation(parent: _controller, curve: Curves.linearToEaseOut);
 
     _shakeController = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
     _shakeController.addListener(() { setState((){});});
@@ -174,17 +174,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
 
       Widget child;
 
-      if (tile.isAnimating) {
-        Point start = widget.game.getLocation(tile.position);
-        Point end = widget.game.getLocation(tile.newPosition!);
-        double dy = start.y > end.y ? 0.1 : start.y == end.y ? 0.0 : -0.1;
-        double dx = start.x > end.x ? 0.1 : start.x == end.x ? 0.0 : -0.1;
-        child = SlideTransition(position: Tween<Offset>(begin: Offset(dx, dy), end: Offset.zero).
-        animate(CurvedAnimation(parent: _controller, curve: Curves.elasticIn)),
-          child: tw,
-        );
-      }
-      else if (tile.isShaking) {
+      if (tile.isShaking) {
         Point zeroPos = widget.game.getLocation(widget.game.zeroTile.position);
         Point tilePos = widget.game.getLocation(tile.position);
         double dy = zeroPos.y > tilePos.y ? 0.055 : zeroPos.y == tilePos.y ? 0.0 : -0.055;
@@ -192,7 +182,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
         child = SlideTransition(
           position: Tween<Offset>(begin: Offset(dx, dy), end: Offset.zero).
           animate(CurvedAnimation(
-              parent: _shakeController, curve: Curves.elasticIn)),
+              parent: _shakeController, curve: Curves.easeInToLinear)),
           child: tw,
         );
       }
