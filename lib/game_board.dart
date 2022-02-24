@@ -83,6 +83,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
     });
   }
 
+  //a tile was tapped in the UI
   void _tapped(Tile tile, {Duration duration = defaultDuration}) {
    bool tapped = game.tap(tile);
    if (tapped) {
@@ -102,7 +103,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   void moveRight({Duration duration = defaultDuration}) {
     Point<int> p = game.getBlankTile();
     if (game.canMoveRight()) {
-      Tile? tile = game.getTileAt(p.x -1, p.y);
+      Tile? tile = game.getTileAt(p.x - 1, p.y);
       _tapped(tile!, duration: duration);
     }
   }
