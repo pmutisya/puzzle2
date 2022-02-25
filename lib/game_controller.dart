@@ -8,6 +8,8 @@ enum Move {
   up, down, left, right
 }
 
+///Processes and stores the moves. Can be used to play the game
+///automatically by calling shuffle and reverseMoves to solve
 class GameController {
   final Game game;
   final List<Move> _moves;
@@ -20,7 +22,8 @@ class GameController {
   void moveTap(Tile tile) {
 
   }
-  void move(Move move, {bool animate = false}) {
+
+  void _move(Move move, {bool animate = false}) {
     Point<int> p = game.getBlankTile();
     Tile tile;
     if (move == Move.left) {
@@ -37,7 +40,6 @@ class GameController {
     }
     game.tap(tile, animate: animate);
     game.completeTap(animate: animate);
-
   }
 
   List<Move> shuffle(int numberOfShuffles, {bool animate = false}) {
@@ -61,7 +63,7 @@ class GameController {
       Move nextMove = legal[random.nextInt(legal.length)];
       moves.add(nextMove);
       previousMove = nextMove;
-      move(nextMove, animate: animate);
+      _move(nextMove, animate: animate);
     }
 
     game.reset();
@@ -89,7 +91,7 @@ class GameController {
       Move nextMove = legal[random.nextInt(legal.length)];
       previousMove = nextMove;
       _moves.add(nextMove);
-      move(nextMove, animate: true);
+      _move(nextMove, animate: true);
     }
   }
 

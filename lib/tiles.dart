@@ -7,7 +7,7 @@ import 'domain.dart';
 import 'image_tiler.dart';
 
 const List<String> tileTypes = ['simple', 'rounded', 'ivory', 'image', 'candy',
-  'gradient', 'gradient stop'];
+  'plastic', 'gradient', 'gradient stop'];
 
 class TileWidget extends StatelessWidget {
   final Tile tile;
@@ -148,7 +148,8 @@ class GradientStopTile extends TileWidget{
         borderRadius: const BorderRadius.all(Radius.circular(2)),
         color: tile.isVisible? color : Colors.transparent,
       ),
-      child: tile.isVisible? Text('${tile.value}', style: TextStyle(color: Colors.black, fontSize: calcTextSize(size)),) :
+      child: tile.isVisible? Text('${tile.value}', style: TextStyle(color: Colors.black,
+        fontFamily: 'Poppins', fontSize: calcTextSize(size)),) :
       Container(),
     );
   }

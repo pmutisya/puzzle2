@@ -49,6 +49,7 @@ class Game extends ChangeNotifier {
     zeroTile = _tiles.last;
     zeroPosition = zeroTile.position;
     for (Tile tile in _tiles) {
+      tile.location = getLocation(tile.position);
       tile.score = distanceFromTrue(tile);
     }
   }
@@ -70,6 +71,7 @@ class Game extends ChangeNotifier {
     }
     for (Tile tile in _tiles) {
       tile.score = distanceFromTrue(tile);
+      tile.location = getLocation(tile.position);
     }
   }
 
@@ -200,7 +202,7 @@ class Game extends ChangeNotifier {
     return (p.y < rows - 1);
   }
 
-  bool _canMoveTile(Tile tile) {
+  bool canMoveTile(Tile tile) {
     Point<int> loc = getLocation(tile.position);
     Point<int> zeroLoc = getLocation(zeroTile.position);
     if (loc.x == zeroLoc.x || loc.y == zeroLoc.y) {

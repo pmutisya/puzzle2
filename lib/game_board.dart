@@ -10,12 +10,11 @@ import 'domain.dart';
 import 'tiles.dart';
 
 class GameBoard extends StatefulWidget {
-  final Game game;
   final GameController gameController;
   final String mode;
   final String? assetImage;
 
-  const GameBoard(this.game, this.gameController, {required this.mode,
+  const GameBoard(this.gameController, {required this.mode,
     this.assetImage,
     Key? key}) : super(key: key);
 
@@ -43,16 +42,19 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    gameController = widget.gameController;
+    game = gameController.game;
+
     _controller = AnimationController(vsync: this, duration: defaultDuration);
     _controller.addListener(() {setState(() {});});
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.forward) {
-        animatingTiles = widget.game.getAnimatingTiles();
+        animatingTiles = game.getAnimatingTiles();
       }
       else if (status == AnimationStatus.completed) {
-        widget.game.completeTap();
+        game.completeTap();
         animatingTiles.clear();
-        if (widget.game.won) {
+        if (game.won) {
           _winController.forward(from: 0.0);
         }
       }
@@ -70,9 +72,6 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
 
     _winController = AnimationController(vsync: this, duration: const Duration(milliseconds: 750));
     _winController.addListener(() { setState((){});});
-
-    game = widget.game;
-    gameController = widget.gameController;
 
     if (widget.assetImage != null) {
       _loadAssetImage();
@@ -161,7 +160,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
       return Tween<Offset>(begin: o1, end: o2).animate(_moveTileAnimation).value;
     }
     else {
-      Point<int> loc = widget.game.getLocation(tile.position);
+      Point<int> loc = game.getLocation(tile.position);
       return Offset(loc.x*tileSize, loc.y*tileSize);
     }
   }
@@ -173,7 +172,8 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
         double tileSize = side/game.columns;
 
         List<Widget> children = [];
-        Container panel = Container(color: Colors.black,
+        Widget panel = SizedBox(
+          // alignment: Alignment.center,
           width: side, height: side,);
         children.add(panel);
 
@@ -186,8 +186,8 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
           Widget child;
 
           if (tile.isShaking) {
-            Point zeroPos = widget.game.getLocation(widget.game.zeroTile.position);
-            Point tilePos = widget.game.getLocation(tile.position);
+            Point zeroPos = game.getLocation(game.zeroTile.position);
+            Point tilePos = game.getLocation(tile.position);
             double dy = zeroPos.y > tilePos.y ? 0.055 : zeroPos.y == tilePos.y ? 0.0 : -0.055;
             double dx = zeroPos.x > tilePos.x ? 0.055 : zeroPos.x == tilePos.x ? 0.0 : -0.055;
             child = SlideTransition(
@@ -228,6 +228,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
       widget.mode == 'ivory'? IvoryTile(tile: tile, game: game, size: size) :
       widget.mode == 'image' && _image != null? ImageTile(_image!, tile: tile, game: game, size: size):
       widget.mode == 'candy'? CandyTile(tile: tile, game: game, size: size) :
+      widget.mode == 'plastic'? PlasticTile(tile: tile, game: game, size: size):
       widget.mode == 'gradient'? GradientTile(startColor: Colors.red, endColor: Colors.blue, tile: tile, size: size, game: game):
       widget.mode =='gradient stop'? GradientStopTile(startColor: Colors.red, endColor: Colors.green, tile: tile, size: size, game: game) :
       SimpleTile(tile: tile, game: game, size: size),

@@ -101,7 +101,7 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
               width: double.infinity, height: double.infinity,
               color: Colors.black,
             ),
-            GameBoard(game, gameController,
+            GameBoard(gameController,
               mode: 'ivory', key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
             )
           ],

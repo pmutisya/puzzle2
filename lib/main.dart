@@ -19,11 +19,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Game Tester',
       theme: ThemeData(
-          fontFamily: 'Poppins'
+          fontFamily: 'MochiyPopOne'
       ),
       darkTheme: ThemeData(
           brightness: Brightness.dark,
-          fontFamily: 'Poppins'
+          fontFamily: 'MochiyPopOne'
       ),
       home: const GameApp(),
     );
@@ -84,7 +84,7 @@ class _GameAppState extends State<GameApp> with SingleTickerProviderStateMixin {
           padding: const EdgeInsets.all(1),
           child: Stack(
             children: [
-              GameBoard(game, gameController, mode: mode)
+              GameBoard(gameController, mode: mode, assetImage: 'assets/images/image_bg.jpg',)
             ],
           ),
         ),

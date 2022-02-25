@@ -71,6 +71,9 @@ flutter:
           weight: 300
         - asset: assets/fonts/Poppins-SemiBold.ttf
           weight: 600
+    - family: MochiyPopOne
+      fonts:
+        - asset: assets/fonts/MochiyPopOne-Regular.ttf
 
   # To add assets to your application, add an assets section, like this:
   # assets:
