@@ -4,16 +4,19 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:puzzle2/game_controller.dart';
 
 import 'domain.dart';
 import 'tiles.dart';
 
 class GameBoard extends StatefulWidget {
   final Game game;
+  final GameController gameController;
   final String mode;
   final String? assetImage;
 
-  const GameBoard(this.game, {required this.mode, this.assetImage,
+  const GameBoard(this.game, this.gameController, {required this.mode,
+    this.assetImage,
     Key? key}) : super(key: key);
 
   @override
@@ -29,6 +32,8 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   static const Duration defaultDuration = Duration(milliseconds: 250);
 
   late Game game;
+  late GameController gameController;
+
   List<Tile> animatingTiles = [];
 
   Tile? activeTile;
@@ -67,6 +72,8 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
     _winController.addListener(() { setState((){});});
 
     game = widget.game;
+    gameController = widget.gameController;
+
     if (widget.assetImage != null) {
       _loadAssetImage();
     }
@@ -100,6 +107,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
    }
   }
 
+  //used by GameRunner automated
   void moveRight({Duration duration = defaultDuration}) {
     Point<int> p = game.getBlankTile();
     if (game.canMoveRight()) {
@@ -108,6 +116,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
     }
   }
 
+  //used by GameRunner automated
   void moveLeft({Duration duration = defaultDuration}) {
     Point<int> p = game.getBlankTile();
     if (game.canMoveLeft()) {
@@ -116,6 +125,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
     }
   }
 
+  //used by GameRunner automated
   void moveDown({Duration duration = defaultDuration}) {
     Point<int> p = game.getBlankTile();
     if (game.canMoveDown()) {
@@ -124,6 +134,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
     }
   }
 
+  //used by GameRunner automated
   void moveUp({Duration duration = defaultDuration}) {
     Point<int> p = game.getBlankTile();
     if (game.canMoveUp()) {
@@ -217,7 +228,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
       widget.mode == 'image' && _image != null? ImageTile(_image!, tile: tile, game: game, size: size):
       widget.mode == 'candy'? CandyTile(tile: tile, game: game, size: size) :
       widget.mode == 'gradient'? GradientTile(startColor: Colors.red, endColor: Colors.blue, tile: tile, size: size, game: game):
-      widget.mode =='gradient-stop'? GradientStopTile(startColor: Colors.red, endColor: Colors.green, tile: tile, size: size, game: game) :
+      widget.mode =='gradient stop'? GradientStopTile(startColor: Colors.red, endColor: Colors.green, tile: tile, size: size, game: game) :
       SimpleTile(tile: tile, game: game, size: size),
     );
   }

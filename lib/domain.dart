@@ -200,6 +200,20 @@ class Game extends ChangeNotifier {
     return (p.y < rows - 1);
   }
 
+  bool _canMoveTile(Tile tile) {
+    Point<int> loc = getLocation(tile.position);
+    Point<int> zeroLoc = getLocation(zeroTile.position);
+    if (loc.x == zeroLoc.x || loc.y == zeroLoc.y) {
+      if (loc.x == zeroLoc.x && loc.y != zeroLoc.y) { //vertical match
+        return true;
+      }
+      if (loc.y == zeroLoc.y && loc.x != zeroLoc.x) { //horizontal match
+        return true;
+      }
+    }
+    return false; //either the zero tile or too far away from it
+  }
+
   bool tap(Tile tile, {bool animate = true}) {
     Point<int> loc = getLocation(tile.position);
     Point<int> zeroLoc = getLocation(zeroTile.position);

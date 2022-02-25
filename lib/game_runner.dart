@@ -102,7 +102,7 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
               color: Colors.black,
             ),
             GameBoard(game, gameController,
-              mode: 'gradient', key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
+              mode: 'ivory', key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
             )
           ],
         ),

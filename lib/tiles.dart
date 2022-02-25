@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'domain.dart';
 import 'image_tiler.dart';
 
+const List<String> tileTypes = ['simple', 'rounded' 'ivory', 'image', 'candy',
+  'gradient', 'gradient stop'];
 
 class TileWidget extends StatelessWidget {
   final Tile tile;

@@ -16,6 +16,10 @@ class GameController {
     game = Game(length),
     _moves = [];
 
+  //called from an actual tap on the game board
+  void moveTap(Tile tile) {
+
+  }
   void move(Move move, {bool animate = false}) {
     Point<int> p = game.getBlankTile();
     Tile tile;
