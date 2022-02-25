@@ -16,7 +16,7 @@ class GameRunner extends StatefulWidget {
 class _GameRunnerState extends State<GameRunner> with GameListener, SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Game game;
-  late GlobalKey<GameBoardState> gameKey;
+  late GlobalKey<GameBoardState> gameBoardKey;
   late GameController gameController;
 
   static const Duration moveDuration = Duration(milliseconds: 250);
@@ -26,7 +26,7 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
   void initState() {
     super.initState();
 
-    gameKey = GlobalKey<GameBoardState>();
+    gameBoardKey = GlobalKey<GameBoardState>();
     gameController = GameController.startSorted(16);
     game = gameController.game;
     game.reset();
@@ -66,16 +66,16 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
     if (animatingMoves.isNotEmpty) {
       Move move = animatingMoves.removeAt(0);
       if (move == Move.up) {
-        gameKey.currentState!.moveUp(duration: moveDuration);
+        gameBoardKey.currentState!.moveUp(duration: moveDuration);
       }
       else if (move == Move.down) {
-        gameKey.currentState!.moveDown(duration: moveDuration);
+        gameBoardKey.currentState!.moveDown(duration: moveDuration);
       }
       else if (move == Move.left) {
-        gameKey.currentState!.moveLeft(duration: moveDuration);
+        gameBoardKey.currentState!.moveLeft(duration: moveDuration);
       }
       else {
-        gameKey.currentState!.moveRight(duration: moveDuration);
+        gameBoardKey.currentState!.moveRight(duration: moveDuration);
       }
     }
   }
@@ -101,8 +101,8 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
               width: double.infinity, height: double.infinity,
               color: Colors.black,
             ),
-            GameBoard(
-              game, mode: 'gradient', key: gameKey, assetImage: 'assets/images/image_bg.jpg',
+            GameBoard(game, gameController,
+              mode: 'gradient', key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
             )
           ],
         ),
