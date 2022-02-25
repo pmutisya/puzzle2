@@ -4,15 +4,19 @@ import 'domain.dart';
 
 Random random = Random();
 
-enum Move {
+enum MoveDirection {
   up, down, left, right
 }
-
+class Move {
+  final MoveDirection moveDirection;
+  final Tile tile;
+  const Move(this.moveDirection, this.tile);
+}
 ///Processes and stores the moves. Can be used to play the game
 ///automatically by calling shuffle and reverseMoves to solve
 class GameController {
   final Game game;
-  final List<Move> _moves;
+  final List<MoveDirection> _moves;
 
   GameController.startSorted(int length) :
     game = Game(length),
@@ -23,16 +27,16 @@ class GameController {
 
   }
 
-  void _move(Move move, {bool animate = false}) {
+  void _move(MoveDirection move, {bool animate = false}) {
     Point<int> p = game.getBlankTile();
     Tile tile;
-    if (move == Move.left) {
+    if (move == MoveDirection.left) {
       tile = game.getTileAt(p.x +1, p.y)!;
     }
-    else if (move == Move.right) {
+    else if (move == MoveDirection.right) {
       tile = game.getTileAt(p.x - 1, p.y)!;
     }
-    else if (move == Move.down) {
+    else if (move == MoveDirection.down) {
       tile = game.getTileAt(p.x, p.y - 1)!;
     }
     else {
@@ -42,25 +46,25 @@ class GameController {
     game.completeTap(animate: animate);
   }
 
-  List<Move> shuffle(int numberOfShuffles, {bool animate = false}) {
-    List<Move> moves = [];
-    Move? previousMove;
+  List<MoveDirection> shuffle(int numberOfShuffles, {bool animate = false}) {
+    List<MoveDirection> moves = [];
+    MoveDirection? previousMove;
 
     for (int k = 0; k < numberOfShuffles; k++) {
-      List<Move> legal = [];
-      if (game.canMoveDown() && previousMove != Move.up) {
-        legal.add(Move.down);
+      List<MoveDirection> legal = [];
+      if (game.canMoveDown() && previousMove != MoveDirection.up) {
+        legal.add(MoveDirection.down);
       }
-      if (game.canMoveUp() && previousMove != Move.down) {
-        legal.add(Move.up);
+      if (game.canMoveUp() && previousMove != MoveDirection.down) {
+        legal.add(MoveDirection.up);
       }
-      if (game.canMoveRight() && previousMove != Move.left) {
-        legal.add(Move.right);
+      if (game.canMoveRight() && previousMove != MoveDirection.left) {
+        legal.add(MoveDirection.right);
       }
-      if (game.canMoveLeft() && previousMove != Move.right) {
-        legal.add(Move.left);
+      if (game.canMoveLeft() && previousMove != MoveDirection.right) {
+        legal.add(MoveDirection.left);
       }
-      Move nextMove = legal[random.nextInt(legal.length)];
+      MoveDirection nextMove = legal[random.nextInt(legal.length)];
       moves.add(nextMove);
       previousMove = nextMove;
       _move(nextMove, animate: animate);
@@ -73,42 +77,42 @@ class GameController {
 
   void shuffleImmediately(int numberOfShuffles) {
     _moves.clear();
-    Move? previousMove;
+    MoveDirection? previousMove;
     for (int k = 0; k < numberOfShuffles; k++) {
-      List<Move> legal = [];
-      if (game.canMoveDown() && !(previousMove == Move.up)) {
-        legal.add(Move.down);
+      List<MoveDirection> legal = [];
+      if (game.canMoveDown() && !(previousMove == MoveDirection.up)) {
+        legal.add(MoveDirection.down);
       }
-      if (game.canMoveUp() && !(previousMove == Move.down)) {
-        legal.add(Move.up);
+      if (game.canMoveUp() && !(previousMove == MoveDirection.down)) {
+        legal.add(MoveDirection.up);
       }
-      if (game.canMoveRight() && !(previousMove == Move.left)) {
-        legal.add(Move.right);
+      if (game.canMoveRight() && !(previousMove == MoveDirection.left)) {
+        legal.add(MoveDirection.right);
       }
-      if (game.canMoveLeft() && !(previousMove == Move.right)) {
-        legal.add(Move.left);
+      if (game.canMoveLeft() && !(previousMove == MoveDirection.right)) {
+        legal.add(MoveDirection.left);
       }
-      Move nextMove = legal[random.nextInt(legal.length)];
+      MoveDirection nextMove = legal[random.nextInt(legal.length)];
       previousMove = nextMove;
       _moves.add(nextMove);
       _move(nextMove, animate: true);
     }
   }
 
-  List<Move> reverseMoves() {
-    List<Move> reverse = [];
-    for (Move move in _moves) {
-      if (move == Move.up) {
-        reverse.insert(0, Move.down);
+  List<MoveDirection> reverseMoves() {
+    List<MoveDirection> reverse = [];
+    for (MoveDirection move in _moves) {
+      if (move == MoveDirection.up) {
+        reverse.insert(0, MoveDirection.down);
       }
-      else if (move == Move.down) {
-        reverse.insert(0, Move.up);
+      else if (move == MoveDirection.down) {
+        reverse.insert(0, MoveDirection.up);
       }
-      else if (move == Move.right) {
-        reverse.insert(0, Move.left);
+      else if (move == MoveDirection.right) {
+        reverse.insert(0, MoveDirection.left);
       }
       else {
-        reverse.insert(0, Move.right);
+        reverse.insert(0, MoveDirection.right);
       }
     }
     return reverse;

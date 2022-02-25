@@ -20,7 +20,7 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
   late GameController gameController;
 
   static const Duration moveDuration = Duration(milliseconds: 250);
-  List<Move> animatingMoves = [];
+  List<MoveDirection> animatingMoves = [];
 
   @override
   void initState() {
@@ -49,14 +49,14 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
   }
   void doNextMove() {
     if (animatingMoves.isNotEmpty) {
-      Move move = animatingMoves.removeAt(0);
-      if (move == Move.up) {
+      MoveDirection move = animatingMoves.removeAt(0);
+      if (move == MoveDirection.up) {
         gameBoardKey.currentState!.moveUp(duration: moveDuration);
       }
-      else if (move == Move.down) {
+      else if (move == MoveDirection.down) {
         gameBoardKey.currentState!.moveDown(duration: moveDuration);
       }
-      else if (move == Move.left) {
+      else if (move == MoveDirection.left) {
         gameBoardKey.currentState!.moveLeft(duration: moveDuration);
       }
       else {

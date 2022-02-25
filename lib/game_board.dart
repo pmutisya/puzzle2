@@ -23,15 +23,15 @@ class GameBoard extends StatefulWidget {
 }
 
 class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
+  late Game game;
+  late GameController gameController;
+
   late AnimationController _controller;
   late CurvedAnimation _moveTileAnimation;
   late AnimationController _shakeController;
   late AnimationController _winController;
 
   static const Duration defaultDuration = Duration(milliseconds: 250);
-
-  late Game game;
-  late GameController gameController;
 
   List<Tile> animatingTiles = [];
 
