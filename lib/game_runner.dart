@@ -47,21 +47,6 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
       }
     });
   }
-
-  void shuffle({bool animate = true}) {
-    animatingMoves = gameController.shuffle(40, animate: animate);
-    doNextMove();
-  }
-
-  void shuffleImmediately() {
-    gameController.shuffleImmediately(40);
-  }
-
-  void reverseSolve() {
-    animatingMoves = gameController.reverseMoves();
-    doNextMove();
-  }
-
   void doNextMove() {
     if (animatingMoves.isNotEmpty) {
       Move move = animatingMoves.removeAt(0);
@@ -78,6 +63,20 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
         gameBoardKey.currentState!.moveRight(duration: moveDuration);
       }
     }
+  }
+
+  void shuffle({bool animate = true}) {
+    animatingMoves = gameController.shuffle(40, animate: animate);
+    doNextMove();
+  }
+
+  void shuffleImmediately() {
+    gameController.shuffleImmediately(40);
+  }
+
+  void reverseSolve() {
+    animatingMoves = gameController.reverseMoves();
+    doNextMove();
   }
 
   @override
