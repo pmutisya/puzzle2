@@ -167,56 +167,57 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   }
   @override
   Widget build(BuildContext context) {
-    MediaQueryData media = MediaQuery.of(context);
-    Size size = media.size;
-    size  = Size(size.width - media.padding.horizontal, size.height - media.padding.vertical);
-    double side = size.shortestSide - 20;
-    double tileSize = side/game.columns;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double side = constraints.biggest.shortestSide - 20;
+        double tileSize = side/game.columns;
 
-    List<Widget> children = [];
-    Container panel = Container(color: Colors.black,
-      width: side, height: side,);
-    children.add(panel);
+        List<Widget> children = [];
+        Container panel = Container(color: Colors.black,
+          width: side, height: side,);
+        children.add(panel);
 
-    for (int k =0; k < game.length; k++) {
-      Tile tile = game[k];
+        for (int k =0; k < game.length; k++) {
+          Tile tile = game[k];
 
-      Offset offset = _getScreenLocation(tile, tileSize);
-      Widget tw = _getTile(tile, tileSize);
+          Offset offset = _getScreenLocation(tile, tileSize);
+          Widget tw = _getTile(tile, tileSize);
 
-      Widget child;
+          Widget child;
 
-      if (tile.isShaking) {
-        Point zeroPos = widget.game.getLocation(widget.game.zeroTile.position);
-        Point tilePos = widget.game.getLocation(tile.position);
-        double dy = zeroPos.y > tilePos.y ? 0.055 : zeroPos.y == tilePos.y ? 0.0 : -0.055;
-        double dx = zeroPos.x > tilePos.x ? 0.055 : zeroPos.x == tilePos.x ? 0.0 : -0.055;
-        child = SlideTransition(
-          position: Tween<Offset>(begin: Offset(dx, dy), end: Offset.zero).
-          animate(CurvedAnimation(
-              parent: _shakeController, curve: Curves.easeInToLinear)),
-          child: tw,
+          if (tile.isShaking) {
+            Point zeroPos = widget.game.getLocation(widget.game.zeroTile.position);
+            Point tilePos = widget.game.getLocation(tile.position);
+            double dy = zeroPos.y > tilePos.y ? 0.055 : zeroPos.y == tilePos.y ? 0.0 : -0.055;
+            double dx = zeroPos.x > tilePos.x ? 0.055 : zeroPos.x == tilePos.x ? 0.0 : -0.055;
+            child = SlideTransition(
+              position: Tween<Offset>(begin: Offset(dx, dy), end: Offset.zero).
+              animate(CurvedAnimation(
+                  parent: _shakeController, curve: Curves.easeInToLinear)),
+              child: tw,
+            );
+          }
+          else {
+            child = tw;
+          }
+
+          Positioned positioned = Positioned(child: child, left: offset.dx, top: offset.dy,);
+          children.add(positioned);
+        }
+
+        return Container(
+          alignment: Alignment.center,
+          width: double.infinity, height: double.infinity,
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.black)
+          ),
+          child: Stack(
+            fit: StackFit.loose,
+            alignment: Alignment.center,
+            children: children,
+          ),
         );
-      }
-      else {
-        child = tw;
-      }
-
-      Positioned positioned = Positioned(child: child, left: offset.dx, top: offset.dy,);
-      children.add(positioned);
-    }
-
-    return Container(
-      alignment: Alignment.center,
-      width: double.infinity, height: double.infinity,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black)
-      ),
-      child: Stack(
-        fit: StackFit.loose,
-        alignment: Alignment.center,
-        children: children,
-      ),
+      },
     );
   }
 
