@@ -32,7 +32,6 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
     game.reset();
 
     game.setGameListener(this);
-    game.addListener(() { setState(() {});});
 
     _controller = AnimationController(vsync: this, duration: GameBoardState.defaultDuration);
   }

@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:flutter/material.dart';
 
 class Tile {
   final int value;
@@ -27,7 +26,7 @@ abstract class GameListener {
   void moveComplete();
 }
 
-class Game extends ChangeNotifier {
+class Game {
   final int length;
   final int columns;
 
@@ -97,7 +96,6 @@ class Game extends ChangeNotifier {
       tile.canMove =  (((p1.x - p0.x).abs() == 1 && p0.y == p1.y)|| ((p1.y - p0.y).abs() == 1 && p0.x == p1.x));
       tile.score = distanceFromTrue(tile);
     }
-    notifyListeners();
   }
 
   Tile operator [](int k) {
@@ -202,20 +200,6 @@ class Game extends ChangeNotifier {
     return (p.y < rows - 1);
   }
 
-  bool canMoveTile(Tile tile) {
-    Point<int> loc = getLocation(tile.position);
-    Point<int> zeroLoc = getLocation(zeroTile.position);
-    if (loc.x == zeroLoc.x || loc.y == zeroLoc.y) {
-      if (loc.x == zeroLoc.x && loc.y != zeroLoc.y) { //vertical match
-        return true;
-      }
-      if (loc.y == zeroLoc.y && loc.x != zeroLoc.x) { //horizontal match
-        return true;
-      }
-    }
-    return false; //either the zero tile or too far away from it
-  }
-
   bool tap(Tile tile, {bool animate = true}) {
     Point<int> loc = getLocation(tile.position);
     Point<int> zeroLoc = getLocation(zeroTile.position);
@@ -249,9 +233,6 @@ class Game extends ChangeNotifier {
         return false;
       }
       moves++;
-      if (animate) {
-        notifyListeners();
-      }
       return true;
     }
     else {
@@ -277,8 +258,6 @@ class Game extends ChangeNotifier {
       listener?.moveComplete();
     }
   }
-
-  void animationComplete() => notifyListeners();
 
   bool get won {
     for (Tile tile in _tiles) {

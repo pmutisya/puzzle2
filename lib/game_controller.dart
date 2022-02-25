@@ -27,6 +27,20 @@ class GameController {
 
   }
 
+  bool isLegalTap(Tile tile) {
+    Point<int> loc = game.getLocation(tile.position);
+    Point<int> zeroLoc = game.getLocation(game.zeroTile.position);
+    if (loc.x == zeroLoc.x || loc.y == zeroLoc.y) {
+      if (loc.x == zeroLoc.x && loc.y != zeroLoc.y) { //vertical match
+        return true;
+      }
+      if (loc.y == zeroLoc.y && loc.x != zeroLoc.x) { //horizontal match
+        return true;
+      }
+    }
+    return false; //either the zero tile or too far away from it
+  }
+
   void _move(MoveDirection move, {bool animate = false}) {
     Point<int> p = game.getBlankTile();
     Tile tile;
