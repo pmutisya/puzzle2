@@ -20,6 +20,14 @@ class Tile {
   bool get isCorrect => value -1 == position;
 
 }
+enum MoveDirection {
+  up, down, left, right
+}
+class Move {
+  final MoveDirection moveDirection;
+  final List<Tile> tiles;
+  const Move(this.moveDirection, this.tiles);
+}
 
 abstract class GameListener {
   void moveStarted();

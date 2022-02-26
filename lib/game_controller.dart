@@ -4,14 +4,6 @@ import 'domain.dart';
 
 Random random = Random();
 
-enum MoveDirection {
-  up, down, left, right
-}
-class Move {
-  final MoveDirection moveDirection;
-  final Tile tile;
-  const Move(this.moveDirection, this.tile);
-}
 ///Processes and stores the moves. Can be used to play the game
 ///automatically by calling shuffle and reverseMoves to solve
 class GameController {
