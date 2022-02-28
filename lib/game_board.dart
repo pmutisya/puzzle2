@@ -13,9 +13,10 @@ class GameBoard extends StatefulWidget {
   final GameController gameController;
   final String mode;
   final String? assetImage;
+  final bool showingOverlay;
 
   const GameBoard(this.gameController, {required this.mode,
-    this.assetImage,
+    this.assetImage, this.showingOverlay = false,
     Key? key}) : super(key: key);
 
   @override
@@ -91,19 +92,30 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
 
   //a tile was tapped in the UI
   void _tapped(Tile tile, {Duration duration = defaultDuration}) {
-   bool tapped = game.tap(tile);
-   if (tapped) {
-     activeTile = null;
-     setState(() {
-       _controller.duration = duration;
-       _controller.forward(from: 0);
-     });
+    Move? move = game.getMoveFromTap(tile);
+    print('TAP:: $move');
+    if (move != null) {
+     // activeTile = null;
+     game.doMove(move);
+    animateExecutedMove();
+     // setState(() {
+     //    _controller.duration = duration;
+     //   _controller.forward(from: 0);
+     // });
    }
    else {
      activeTile = tile;
      activeTile!.isShaking = true;
      _shakeController.forward(from: 0);
    }
+  }
+
+  void animateExecutedMove({Duration duration = defaultDuration}) {
+    activeTile = null;
+    setState(() {
+      _controller.duration = duration;
+      _controller.forward(from: 0);
+    });
   }
 
   //used by GameRunner automated
@@ -157,6 +169,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
       Offset o1 = Offset(l1.x * tileSize, l1.y * tileSize);
       Offset o2 = Offset(l2.x * tileSize, l2.y * tileSize);
 
+      print('\t>>>>>$tile');
       return Tween<Offset>(begin: o1, end: o2).animate(_moveTileAnimation).value;
     }
     else {
@@ -202,6 +215,15 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
           }
 
           Positioned positioned = Positioned(child: child, left: offset.dx, top: offset.dy,);
+          if (widget.showingOverlay) {
+            Text text = Text('${(game.percentCorrect*100).toInt()}',
+              style: const TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),);
+            Positioned stats = Positioned(child: Container(
+              color: Colors.white.withOpacity(.4), padding: const EdgeInsets.all(12),
+              child: text,
+            ), right: 0, bottom: 0,);
+            children.add(stats);
+          }
           children.add(positioned);
         }
 

@@ -67,8 +67,8 @@ class SimpleTile extends TileWidget {
       alignment: Alignment.center,
       margin: const EdgeInsets.only(left: 1, top: 1),
       decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(2)),
-        color: tile.isVisible? Colors.red : Colors.transparent,
+        // borderRadius: const BorderRadius.all(Radius.circular(2)),
+        color: tile.isVisible? Colors.blueGrey : Colors.transparent,
       ),
       child: tile.isVisible? Text('${tile.value}', style: TextStyle(color: Colors.black, fontSize: calcTextSize(size)),) :
       Container(),

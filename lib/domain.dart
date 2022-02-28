@@ -6,6 +6,7 @@ class Tile {
   int position;
   int? newPosition;
   Point<int>? location;
+  Point<int>? newLocation;
 
   bool isAnimating = false;
   bool isShaking = false;
@@ -15,7 +16,7 @@ class Tile {
   Tile(this.value, this.position);
 
   @override
-  String toString() => 'Tile $value [$location] at $position new: $newPosition';
+  String toString() => 'Tile $value [$location] new: [$newLocation] at $position new: $newPosition';
 
   bool get isCorrect => value -1 == position;
 
@@ -27,6 +28,22 @@ class Move {
   final MoveDirection moveDirection;
   final List<Tile> tiles;
   const Move(this.moveDirection, this.tiles);
+
+  int get dx => moveDirection == MoveDirection.left? -1 : moveDirection == MoveDirection.right ? 1:0;
+
+  int get dy => (moveDirection == MoveDirection.down) ? 1 :
+  (moveDirection == MoveDirection.up)? -1 : 0;
+
+  @override
+  String toString() {
+    StringBuffer buffer = StringBuffer();
+    buffer.write('Move $moveDirection ');
+    for(Tile element in tiles) {
+      buffer.write('[${element.value}]');
+    }
+    return buffer.toString();
+  }
+
 }
 
 abstract class GameListener {
@@ -43,7 +60,7 @@ class Game {
   late Tile zeroTile;
   late int zeroPosition;
 
-  GameListener? listener;
+  GameListener? _gameListener;
 
   ///Creates a game with tiles already in
   ///order. This is useful for starting a game
@@ -82,16 +99,20 @@ class Game {
     }
   }
 
-  void setGameListener(GameListener newListener) => listener = newListener;
+  void setGameListener(GameListener newListener) => _gameListener = newListener;
 
   int get rows => length ~/ columns;
 
   void reset() {
     int l = length;
     moves = 0;
-    _tiles.clear();
+    // _tiles.clear();
     for (int k = 0; k < l; k++) {
-      _tiles.add(Tile(k+1, k));
+      Tile tile = _tiles[k];
+      tile.position = k;
+      tile.location = getLocation(tile.position);
+      tile.score = distanceFromTrue(tile);
+      // _tiles.add(Tile(k+1, k));
     }
     zeroTile = _tiles.last;
     zeroTile.isVisible = false;
@@ -208,7 +229,79 @@ class Game {
     return (p.y < rows - 1);
   }
 
-  bool tap(Tile tile, {bool animate = true}) {
+  bool canTap(Tile tile) {
+    Point<int> loc = getLocation(tile.position);
+    Point<int> zeroLoc = getLocation(zeroTile.position);
+    return ((loc.x == zeroLoc.x) && (loc.y != zeroLoc.y)) ||
+        ((loc.y == zeroLoc.y) && (loc.x != zeroLoc.x));
+  }
+
+  List<Tile> getLegalTiles() {
+    List<Tile> tiles = [];
+    for (Tile tile in _tiles) {
+      if (canTap(tile)) {
+        tiles.add(tile);
+      }
+    }
+    return tiles;
+  }
+
+  void doMove(Move move, {bool animate = true}) {
+    for (Tile tile in move.tiles) {
+      int nx = tile.location!.x + move.dx;
+      int ny = tile.location!.y + move.dy;
+      tile.newLocation = Point<int>(nx, ny);
+      tile.newPosition = getPositionFromLocation(nx, ny);
+      tile.isAnimating = animate;
+    }
+    zeroTile.newLocation = move.tiles.first.location;
+    zeroTile.newPosition = move.tiles.first.position;
+    zeroTile.isAnimating = animate;
+    print('DONE MOVE:: ${move.tiles}');
+    print('$move\n\n');
+  }
+
+  Move getReverse(Move move) {
+    MoveDirection direction = (move.moveDirection == MoveDirection.down)? MoveDirection.up:
+    (move.moveDirection == MoveDirection.up)? MoveDirection.down:
+    (move.moveDirection == MoveDirection.right)? MoveDirection.left : MoveDirection.right;
+
+    return Move(direction, move.tiles);
+  }
+
+  Move? getMoveFromTap(Tile tile) {
+    if (canTap(tile)) {
+      Point<int> loc = getLocation(tile.position);
+      Point<int> zeroLoc = getLocation(zeroTile.position);
+      List<Tile> tiles = [];
+      int dx = (zeroLoc.x > loc.x)? 1 : (zeroLoc.x < loc.x)? -1 : 0;
+      int dy = (zeroLoc.y > loc.y)? 1 : (zeroLoc.y < loc.y)? -1 : 0;
+      MoveDirection direction = (dx > 0)? MoveDirection.right :
+        (dx < 0)? MoveDirection.left : (dy > 0)? MoveDirection.down : MoveDirection.up;
+
+      Point<int> newZeroLocation = tile.location!;
+      zeroTile.newLocation = newZeroLocation;
+      zeroTile.newPosition = getPositionFromLocation(newZeroLocation.x, newZeroLocation.y);
+
+      if (dx != 0) { //horizontal shift
+        for (int x = loc.x; x != zeroLoc.x; x+=dx) {
+          Tile movingTile = getTileAt(x, loc.y)!;
+          tiles.add(movingTile);
+        }
+      }
+      else {
+        for (int y = loc.y; y != zeroLoc.y; y += dy) {
+          tiles.add(getTileAt(loc.x, y)!);
+        }
+      }
+      return Move(direction, tiles);
+    }
+    else {
+      return null;
+    }
+  }
+
+  bool _tapOld(Tile tile, {bool animate = true}) {
     Point<int> loc = getLocation(tile.position);
     Point<int> zeroLoc = getLocation(zeroTile.position);
     if (loc.x == zeroLoc.x || loc.y == zeroLoc.y) {
@@ -263,7 +356,7 @@ class Game {
       tile.score = distanceFromTrue(tile);
     }
     if (animate) {
-      listener?.moveComplete();
+      _gameListener?.moveComplete();
     }
   }
 

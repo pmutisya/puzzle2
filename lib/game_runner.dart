@@ -20,7 +20,7 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
   late GameController gameController;
 
   static const Duration moveDuration = Duration(milliseconds: 250);
-  List<MoveDirection> animatingMoves = [];
+  List<Move> animatingMoves = [];
 
   @override
   void initState() {
@@ -48,24 +48,16 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
   }
   void doNextMove() {
     if (animatingMoves.isNotEmpty) {
-      MoveDirection move = animatingMoves.removeAt(0);
-      if (move == MoveDirection.up) {
-        gameBoardKey.currentState!.moveUp(duration: moveDuration);
-      }
-      else if (move == MoveDirection.down) {
-        gameBoardKey.currentState!.moveDown(duration: moveDuration);
-      }
-      else if (move == MoveDirection.left) {
-        gameBoardKey.currentState!.moveLeft(duration: moveDuration);
-      }
-      else {
-        gameBoardKey.currentState!.moveRight(duration: moveDuration);
-      }
+      Move move = animatingMoves.removeAt(0);
+      print('\nMOVE:: $move');
+      game.doMove(move);
+      gameBoardKey.currentState!.animateExecutedMove(duration: moveDuration);
     }
   }
 
   void shuffle({bool animate = true}) {
     animatingMoves = gameController.shuffle(40, animate: animate);
+    print('got back ${animatingMoves.length} moves');
     doNextMove();
   }
 
@@ -99,8 +91,8 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
               width: double.infinity, height: double.infinity,
               color: Colors.black,
             ),
-            GameBoard(gameController,
-              mode: 'ivory', key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
+            GameBoard(gameController, showingOverlay: true,
+              mode: 'simple', key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
             )
           ],
         ),
@@ -119,6 +111,10 @@ void main() {
       brightness: Brightness.dark,
       fontFamily: 'Poppins'
     ),
-    home: const GameRunner(),
+    home: Container(
+      color: Colors.blue,
+      padding: const EdgeInsets.all(20.0),
+      child: const GameRunner(),
+    ),
   ));
 }
