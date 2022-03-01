@@ -90,7 +90,8 @@ class GameController {
   List<Move> reverseMoves() {
     List<Move> reverse = [];
     for (Move move in _moves) {
-
+      Move reverseMove = game.getReverse(move);
+      reverse.insert(0, reverseMove);
     }
     // for (Move move in _moves) {
     //   if (move == MoveDirection.up) {
