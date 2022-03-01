@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:keymap/keymap.dart';
-import 'package:puzzle2/game_board.dart';
-
-import 'domain.dart';
-import 'game_controller.dart';
-import 'tiles.dart';
+import 'package:puzzle2/game_ui/game_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,38 +34,17 @@ class GameApp extends StatefulWidget {
 
 class _GameAppState extends State<GameApp> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  String mode = 'gradient stop';
-
-  late Game game;
-  late GameController gameController;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-    gameController = GameController.startSorted(16);
-    game = gameController.game;
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
-  }
-  Widget _getModeMenu() {
-    return DropdownButton<String>(
-      icon: const Icon(Icons.keyboard_arrow_down),
-      elevation: 20,
-      items: tileTypes.map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem(child: Text(value), value: value,);
-      }).toList(),
-      value: mode,
-      onChanged: (String? newValue) {
-        setState(() {
-          mode = newValue!;
-        });
-      },
-    );
   }
 
   @override
@@ -78,13 +53,14 @@ class _GameAppState extends State<GameApp> with SingleTickerProviderStateMixin {
       child: Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: _getModeMenu(),
+          title: const Text('GAME TEST'),
         ),
         body: Container(
           padding: const EdgeInsets.all(1),
           child: Stack(
-            children: [
-              GameBoard(gameController, mode: mode, assetImage: 'assets/images/image_bg.jpg',)
+            children: const [
+              GameScreen()
+              // GameBoard(gameController, mode: mode, assetImage: 'assets/images/image_bg.jpg',)
             ],
           ),
         ),

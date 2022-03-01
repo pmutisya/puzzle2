@@ -28,6 +28,7 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   keymap: 0.0.5
+  flutter_svg: 1.0.3
   flutter:
     sdk: flutter
 
@@ -60,6 +61,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/svg/
 
   fonts:
     - family: Poppins

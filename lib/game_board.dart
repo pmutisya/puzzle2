@@ -91,7 +91,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   }
 
   //a tile was tapped in the UI
-  void _tapped(Tile tile, {Duration duration = defaultDuration}) {
+  void _tapped(Tile tile) {
     Move? move = game.getMoveFromTap(tile);
     if (move != null) {
      // activeTile = null;

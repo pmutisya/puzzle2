@@ -295,7 +295,6 @@ class Game {
     if (animate) {
       _gameListener?.moveComplete();
     }
-    print('${getLegalTiles()}');
   }
 
   bool get won {
