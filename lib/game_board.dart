@@ -93,7 +93,6 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   //a tile was tapped in the UI
   void _tapped(Tile tile, {Duration duration = defaultDuration}) {
     Move? move = game.getMoveFromTap(tile);
-    print('TAP:: $move');
     if (move != null) {
      // activeTile = null;
      game.doMove(move);
@@ -120,7 +119,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
 
   //used by GameRunner automated
   void moveRight({Duration duration = defaultDuration}) {
-    Point<int> p = game.getBlankTile();
+    Point<int> p = game.zeroLocation;
     if (game.canMoveRight()) {
       Tile? tile = game.getTileAt(p.x - 1, p.y);
       _tapped(tile!, duration: duration);
@@ -129,7 +128,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
 
   //used by GameRunner automated
   void moveLeft({Duration duration = defaultDuration}) {
-    Point<int> p = game.getBlankTile();
+    Point<int> p = game.zeroLocation;
     if (game.canMoveLeft()) {
       Tile? tile = game.getTileAt(p.x + 1, p.y);
       _tapped(tile!, duration: duration);
@@ -138,7 +137,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
 
   //used by GameRunner automated
   void moveDown({Duration duration = defaultDuration}) {
-    Point<int> p = game.getBlankTile();
+    Point<int> p = game.zeroLocation;
     if (game.canMoveDown()) {
       Tile? tile = game.getTileAt(p.x, p.y - 1);
       _tapped(tile!, duration: duration);
@@ -147,7 +146,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
 
   //used by GameRunner automated
   void moveUp({Duration duration = defaultDuration}) {
-    Point<int> p = game.getBlankTile();
+    Point<int> p = game.zeroLocation;
     if (game.canMoveUp()) {
       Tile? tile = game.getTileAt(p.x, p.y + 1);
       _tapped(tile!, duration: duration);
@@ -169,7 +168,6 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
       Offset o1 = Offset(l1.x * tileSize, l1.y * tileSize);
       Offset o2 = Offset(l2.x * tileSize, l2.y * tileSize);
 
-      print('\t>>>>>$tile');
       return Tween<Offset>(begin: o1, end: o2).animate(_moveTileAnimation).value;
     }
     else {
@@ -190,7 +188,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
           width: side, height: side,);
         children.add(panel);
 
-        for (int k =0; k < game.length; k++) {
+        for (int k =0; k < game.length - 1; k++) {
           Tile tile = game[k];
 
           Offset offset = _getScreenLocation(tile, tileSize);
@@ -199,7 +197,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
           Widget child;
 
           if (tile.isShaking) {
-            Point zeroPos = game.getLocation(game.zeroTile.position);
+            Point zeroPos = game.zeroLocation;
             Point tilePos = game.getLocation(tile.position);
             double dy = zeroPos.y > tilePos.y ? 0.055 : zeroPos.y == tilePos.y ? 0.0 : -0.055;
             double dx = zeroPos.x > tilePos.x ? 0.055 : zeroPos.x == tilePos.x ? 0.0 : -0.055;
@@ -215,16 +213,19 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
           }
 
           Positioned positioned = Positioned(child: child, left: offset.dx, top: offset.dy,);
-          if (widget.showingOverlay) {
-            Text text = Text('${(game.percentCorrect*100).toInt()}',
-              style: const TextStyle(fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),);
-            Positioned stats = Positioned(child: Container(
-              color: Colors.white.withOpacity(.4), padding: const EdgeInsets.all(12),
-              child: text,
-            ), right: 0, bottom: 0,);
-            children.add(stats);
-          }
           children.add(positioned);
+        }
+        if (widget.showingOverlay) {
+          Point<int> p = game.zeroLocation;
+          Text text = Text('[${p.x},${p.y}] ${(game.percentCorrect*100).toInt()}',
+            style: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),);
+          Positioned stats = Positioned(child: IgnorePointer(
+            child: Container(
+              color: Colors.white.withOpacity(.5), padding: const EdgeInsets.all(12),
+              child: text,
+            ),
+          ), right: 0, bottom: 0,);
+          children.add(stats);
         }
 
         return Container(

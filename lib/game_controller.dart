@@ -21,7 +21,7 @@ class GameController {
 
   bool isLegalTap(Tile tile) {
     Point<int> loc = game.getLocation(tile.position);
-    Point<int> zeroLoc = game.getLocation(game.zeroTile.position);
+    Point<int> zeroLoc = game.zeroLocation;
     if (loc.x == zeroLoc.x || loc.y == zeroLoc.y) {
       if (loc.x == zeroLoc.x && loc.y != zeroLoc.y) { //vertical match
         return true;
@@ -56,9 +56,10 @@ class GameController {
         }
       }
       Tile tappedTile = possibleTiles[random.nextInt(possibleTiles.length)];
+      oldZeroPosition = game.zeroLocation;
       Move move = game.getMoveFromTap(tappedTile)!;
       moves.add(move);
-      oldZeroPosition = move.tiles.first.location!;
+      // oldZeroPosition = move.tiles.first.location!;
       _move(move, animate: animate);
     }
     game.reset();

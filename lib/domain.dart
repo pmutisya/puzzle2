@@ -9,14 +9,15 @@ class Tile {
   Point<int>? newLocation;
 
   bool isAnimating = false;
-  bool isShaking = false;
   bool isVisible = true;
+  bool isShaking = false;
   bool canMove = false;
 
   Tile(this.value, this.position);
 
   @override
-  String toString() => 'Tile $value [$location] new: [$newLocation] at $position new: $newPosition';
+  String toString() => '[$value]';
+  // String toString() => 'Tile $value [$location] new: [$newLocation] at $position new: $newPosition';
 
   bool get isCorrect => value -1 == position;
 
@@ -27,7 +28,8 @@ enum MoveDirection {
 class Move {
   final MoveDirection moveDirection;
   final List<Tile> tiles;
-  const Move(this.moveDirection, this.tiles);
+  final Point<int> newZeroLocation;
+  const Move(this.moveDirection, this.tiles, this.newZeroLocation);
 
   int get dx => moveDirection == MoveDirection.left? -1 : moveDirection == MoveDirection.right ? 1:0;
 
@@ -57,8 +59,9 @@ class Game {
 
   int moves = 0;
   final List<Tile> _tiles;
-  late Tile zeroTile;
+
   late int zeroPosition;
+  late Point<int> zeroLocation;
 
   GameListener? _gameListener;
 
@@ -67,35 +70,13 @@ class Game {
   ///with the tiles in order then shuffling them
   ///visibly
   Game(this.length) :
-      _tiles = List<Tile>.generate(length, (index) => Tile(index+1, index)),
+      _tiles = List<Tile>.generate(length - 1, (index) => Tile(index+1, index)),
     columns = sqrt(length).toInt() {
-    _tiles.last.isVisible = false;
-    zeroTile = _tiles.last;
-    zeroPosition = zeroTile.position;
+    zeroPosition = length;
+    zeroLocation = Point<int>(columns - 1, columns - 1);
     for (Tile tile in _tiles) {
       tile.location = getLocation(tile.position);
       tile.score = distanceFromTrue(tile);
-    }
-  }
-
-  ///Creates a game with the given tile order
-  ///This is useful for solving specific game states
-  Game.fromValues(List<int> values):
-    length = values.length,
-  _tiles = List<Tile>.generate(values.length, (index) => Tile(values[index]+1, index)),
-  columns = sqrt(values.length).toInt() {
-
-    for (int k =0; k < _tiles.length; k++) {
-      if (_tiles[k].value == _tiles.length) {
-        zeroTile = _tiles[k];
-        zeroTile.isVisible = false;
-        zeroPosition = _tiles[k].position;
-        break;
-      }
-    }
-    for (Tile tile in _tiles) {
-      tile.score = distanceFromTrue(tile);
-      tile.location = getLocation(tile.position);
     }
   }
 
@@ -107,22 +88,21 @@ class Game {
     int l = length;
     moves = 0;
     // _tiles.clear();
-    for (int k = 0; k < l; k++) {
+    for (int k = 0; k < l - 1; k++) {
       Tile tile = _tiles[k];
       tile.position = k;
       tile.location = getLocation(tile.position);
       tile.score = distanceFromTrue(tile);
-      // _tiles.add(Tile(k+1, k));
     }
-    zeroTile = _tiles.last;
-    zeroTile.isVisible = false;
-    zeroPosition = zeroTile.position;
+    zeroPosition = length;
+    zeroLocation = Point<int>(columns - 1, columns - 1);
 
-    Point<int> p0 = getBlankTile();
+    Point<int> p0 = zeroLocation;
     for (Tile tile in _tiles) {
       Point<int> p1 = getLocation(tile.position);
       tile.location = p1;
-      tile.canMove =  (((p1.x - p0.x).abs() == 1 && p0.y == p1.y)|| ((p1.y - p0.y).abs() == 1 && p0.x == p1.x));
+      tile.canMove = (p1.x == p0.x) || (p1.y == p0.y);
+        //(((p1.x - p0.x).abs() == 1 && p0.y == p1.y)|| ((p1.y - p0.y).abs() == 1 && p0.x == p1.x));
       tile.score = distanceFromTrue(tile);
     }
   }
@@ -165,10 +145,6 @@ class Game {
     return row*columns + col;
   }
 
-  Point<int> getBlankTile() {
-    return getLocation(zeroTile.position);
-  }
-
   List<Tile> getAnimatingTiles() {
     List<Tile> tiles = [];
     for (Tile tile in _tiles) {
@@ -189,8 +165,13 @@ class Game {
   }
 
   Tile? getTileAt(int col, int row) {
-    int position = getPositionFromLocation(col, row);
-    return getTileAtPosition(position);
+    Point<int> loc = Point(col, row);
+    for (Tile tile in _tiles) {
+      if (tile.location == loc) {
+        return tile;
+      }
+    }
+    return null;
   }
 
   //Manhattan distance
@@ -209,31 +190,30 @@ class Game {
         totalCorrect++;
       }
     }
-    return totalCorrect/length;
+    return totalCorrect/(length - 1);
   }
 
   bool canMoveRight() {
-    Point<int> p = getBlankTile();
+    Point<int> p = zeroLocation;
     return (p.x > 0);
   }
   bool canMoveLeft() {
-    Point<int> p = getBlankTile();
+    Point<int> p = zeroLocation;
     return (p.x < columns - 1);
   }
   bool canMoveDown() {
-    Point p = getBlankTile();
+    Point p = zeroLocation;
     return (p.y > 0);
   }
   bool canMoveUp() {
-    Point<int> p = getBlankTile();
+    Point<int> p = zeroLocation;
     return (p.y < rows - 1);
   }
 
   bool canTap(Tile tile) {
     Point<int> loc = getLocation(tile.position);
-    Point<int> zeroLoc = getLocation(zeroTile.position);
-    return ((loc.x == zeroLoc.x) && (loc.y != zeroLoc.y)) ||
-        ((loc.y == zeroLoc.y) && (loc.x != zeroLoc.x));
+    return ((loc.x == zeroLocation.x) && (loc.y != zeroLocation.y)) ||
+        ((loc.y == zeroLocation.y) && (loc.x != zeroLocation.x));
   }
 
   List<Tile> getLegalTiles() {
@@ -254,11 +234,8 @@ class Game {
       tile.newPosition = getPositionFromLocation(nx, ny);
       tile.isAnimating = animate;
     }
-    zeroTile.newLocation = move.tiles.first.location;
-    zeroTile.newPosition = move.tiles.first.position;
-    zeroTile.isAnimating = animate;
-    print('DONE MOVE:: ${move.tiles}');
-    print('$move\n\n');
+    zeroLocation = move.tiles.first.location!;
+    zeroPosition = move.tiles.first.position;
   }
 
   Move getReverse(Move move) {
@@ -266,80 +243,39 @@ class Game {
     (move.moveDirection == MoveDirection.up)? MoveDirection.down:
     (move.moveDirection == MoveDirection.right)? MoveDirection.left : MoveDirection.right;
 
-    return Move(direction, move.tiles);
+    return Move(direction, move.tiles, move.tiles.first.location!);
   }
 
   Move? getMoveFromTap(Tile tile) {
     if (canTap(tile)) {
-      Point<int> loc = getLocation(tile.position);
-      Point<int> zeroLoc = getLocation(zeroTile.position);
+      Point<int> loc = tile.location!; //getLocation(tile.position);
+      Point<int> zL = zeroLocation;
       List<Tile> tiles = [];
-      int dx = (zeroLoc.x > loc.x)? 1 : (zeroLoc.x < loc.x)? -1 : 0;
-      int dy = (zeroLoc.y > loc.y)? 1 : (zeroLoc.y < loc.y)? -1 : 0;
+      int dx = (zL.x > loc.x)? 1 : (zL.x < loc.x)? -1 : 0;
+      int dy = (zL.y > loc.y)? 1 : (zL.y < loc.y)? -1 : 0;
       MoveDirection direction = (dx > 0)? MoveDirection.right :
         (dx < 0)? MoveDirection.left : (dy > 0)? MoveDirection.down : MoveDirection.up;
 
       Point<int> newZeroLocation = tile.location!;
-      zeroTile.newLocation = newZeroLocation;
-      zeroTile.newPosition = getPositionFromLocation(newZeroLocation.x, newZeroLocation.y);
 
       if (dx != 0) { //horizontal shift
-        for (int x = loc.x; x != zeroLoc.x; x+=dx) {
+        for (int x = loc.x; x != zL.x; x+=dx) {
           Tile movingTile = getTileAt(x, loc.y)!;
           tiles.add(movingTile);
         }
       }
-      else {
-        for (int y = loc.y; y != zeroLoc.y; y += dy) {
+      else { //vertical shift
+        for (int y = loc.y; y != zL.y; y += dy) {
           tiles.add(getTileAt(loc.x, y)!);
         }
       }
-      return Move(direction, tiles);
+      return Move(direction, tiles, newZeroLocation);
     }
     else {
       return null;
     }
   }
 
-  bool _tapOld(Tile tile, {bool animate = true}) {
-    Point<int> loc = getLocation(tile.position);
-    Point<int> zeroLoc = getLocation(zeroTile.position);
-    if (loc.x == zeroLoc.x || loc.y == zeroLoc.y) {
-      if (loc.x == zeroLoc.x && loc.y != zeroLoc.y) { //vertical match
-        int direction = zeroLoc.y < loc.y ? -1 : 1;
-        for (int y = loc.y; y != zeroLoc.y; y+=direction) {
-          Tile intermediateTile = getTileAt(loc.x, y)!;
-          intermediateTile.newPosition = getPositionFromLocation(loc.x, y + direction);
-          if (animate) {
-            intermediateTile.isAnimating = true;
-          }
-        }
-
-        zeroTile.newPosition = tile.position;
-        zeroTile.isAnimating = animate;
-      }
-      else if (loc.x != zeroLoc.x){
-        int direction = zeroLoc.x < loc.x ? -1 : 1;
-        for (int x = loc.x; x != zeroLoc.x; x+=direction) {
-          Tile intermediateTile = getTileAt(x, loc.y)!;
-          intermediateTile.newPosition = getPositionFromLocation(x + direction, loc.y);
-          if (animate) {
-            intermediateTile.isAnimating = true;
-          }
-        }
-        zeroTile.newPosition = tile.position;
-        zeroTile.isAnimating = animate;
-      }
-      else {
-        return false;
-      }
-      moves++;
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
 
   void completeTap({bool animate = true}) {
     for (Tile tile in _tiles) {
@@ -349,15 +285,17 @@ class Game {
         tile.isAnimating = false;
       }
     }
-    Point<int> p0 = getBlankTile();
+    Point<int> p0 = zeroLocation;
     for (Tile tile in _tiles) {
       Point<int> p1 = tile.location!;
-      tile.canMove =  (((p1.x - p0.x).abs() == 1 && p0.y == p1.y)|| ((p1.y - p0.y).abs() == 1 && p0.x == p1.x));
+      tile.canMove == (p1.x == p0.x) || (p1.y == p0.y);
+      // tile.canMove =  (((p1.x - p0.x).abs() == 1 && p0.y == p1.y)|| ((p1.y - p0.y).abs() == 1 && p0.x == p1.x));
       tile.score = distanceFromTrue(tile);
     }
     if (animate) {
       _gameListener?.moveComplete();
     }
+    print('${getLegalTiles()}');
   }
 
   bool get won {

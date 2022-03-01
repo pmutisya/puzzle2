@@ -37,7 +37,7 @@ class TileWidget extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(radius)),
             color: tile.isVisible? tile.isCorrect? Colors.greenAccent :
-              tile.canMove? Colors.lightGreenAccent : Colors.amberAccent : Colors.transparent,
+              tile.canMove? Colors.lightBlueAccent : Colors.amberAccent : Colors.transparent,
             boxShadow: tile.isVisible? const [BoxShadow(color: Colors.black12, offset: Offset(2, 2))] : [],
           ),
           child: tile.isVisible? Text('${tile.value}',
@@ -45,7 +45,7 @@ class TileWidget extends StatelessWidget {
             Container(),
         ),
         tile.isVisible? Positioned(top: 12, left: 12,
-          child: Text('${tile.score}', style: const TextStyle(fontSize: 10),),
+          child: Text('[${tile.location!.x}, ${tile.location!.y}]', style: const TextStyle(fontSize: 10),),
         ) : Container(),
       ],
     );
