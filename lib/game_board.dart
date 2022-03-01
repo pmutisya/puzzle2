@@ -95,12 +95,9 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
     Move? move = game.getMoveFromTap(tile);
     if (move != null) {
      // activeTile = null;
-     game.doMove(move);
-    animateExecutedMove();
-     // setState(() {
-     //    _controller.duration = duration;
-     //   _controller.forward(from: 0);
-     // });
+      game.doMove(move);
+      gameController.addMove(move);
+      animateExecutedMove();
    }
    else {
      activeTile = tile;
@@ -115,42 +112,6 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
       _controller.duration = duration;
       _controller.forward(from: 0);
     });
-  }
-
-  //used by GameRunner automated
-  void moveRight({Duration duration = defaultDuration}) {
-    Point<int> p = game.zeroLocation;
-    if (game.canMoveRight()) {
-      Tile? tile = game.getTileAt(p.x - 1, p.y);
-      _tapped(tile!, duration: duration);
-    }
-  }
-
-  //used by GameRunner automated
-  void moveLeft({Duration duration = defaultDuration}) {
-    Point<int> p = game.zeroLocation;
-    if (game.canMoveLeft()) {
-      Tile? tile = game.getTileAt(p.x + 1, p.y);
-      _tapped(tile!, duration: duration);
-    }
-  }
-
-  //used by GameRunner automated
-  void moveDown({Duration duration = defaultDuration}) {
-    Point<int> p = game.zeroLocation;
-    if (game.canMoveDown()) {
-      Tile? tile = game.getTileAt(p.x, p.y - 1);
-      _tapped(tile!, duration: duration);
-    }
-  }
-
-  //used by GameRunner automated
-  void moveUp({Duration duration = defaultDuration}) {
-    Point<int> p = game.zeroLocation;
-    if (game.canMoveUp()) {
-      Tile? tile = game.getTileAt(p.x, p.y + 1);
-      _tapped(tile!, duration: duration);
-    }
   }
 
   @override

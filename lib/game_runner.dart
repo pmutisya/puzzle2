@@ -49,25 +49,31 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
   void doNextMove() {
     if (animatingMoves.isNotEmpty) {
       Move move = animatingMoves.removeAt(0);
-      print('\nMOVE:: $move');
       game.doMove(move);
       gameBoardKey.currentState!.animateExecutedMove(duration: moveDuration);
     }
   }
 
   void shuffle({bool animate = true}) {
-    animatingMoves = gameController.shuffle(40, animate: animate);
-    print('got back ${animatingMoves.length} moves');
+    animatingMoves = gameController.shuffle(20, animate: animate);
     doNextMove();
   }
 
   void shuffleImmediately() {
-    gameController.shuffleImmediately(40);
+    gameController.shuffleImmediately(20);
+    gameBoardKey.currentState!.setState(() {
+    });
   }
 
   void reverseSolve() {
     animatingMoves = gameController.reverseMoves();
     doNextMove();
+  }
+
+  void resetGame() {
+    gameController.resetGame();
+    gameBoardKey.currentState!.setState(() {
+    });
   }
 
   @override
@@ -82,7 +88,8 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
       body: KeyboardWidget(
         bindings: [
           KeyAction(LogicalKeyboardKey.keyS, 'Shuffle the board', shuffle),
-          KeyAction(LogicalKeyboardKey.keyR, 'Reverse solve', reverseSolve),
+          KeyAction(LogicalKeyboardKey.keyR, 'Reset the game', resetGame),
+          KeyAction(LogicalKeyboardKey.keyV, 'Reverse solve', reverseSolve),
           KeyAction(LogicalKeyboardKey.keyS, 'Shuffle (no animation)', shuffleImmediately, isShiftPressed: true),
         ],
         child: Stack(

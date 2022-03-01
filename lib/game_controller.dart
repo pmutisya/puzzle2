@@ -15,8 +15,8 @@ class GameController {
     _moves = [];
 
   //called from an actual tap on the game board
-  void moveTap(Tile tile) {
-
+  void addMove(Move move) {
+    _moves.add(move);
   }
 
   bool isLegalTap(Tile tile) {
@@ -33,8 +33,9 @@ class GameController {
     return false; //either the zero tile or too far away from it
   }
 
-  void animateMove(Move move) {
-
+  void resetGame() {
+    game.reset();
+    _moves.clear();
   }
 
   void _move(Move move, {bool animate = false}) {
@@ -67,7 +68,7 @@ class GameController {
     return moves;
   }
 
-  void shuffleImmediately(int numberOfShuffles) {
+  List<Move> shuffleImmediately(int numberOfShuffles) {
     _moves.clear();
     Point<int> oldZeroPosition = const Point<int>(-1, -1);
     List<Move> moves = [];
@@ -80,11 +81,12 @@ class GameController {
         }
       }
       Tile tappedTile = possibleTiles[random.nextInt(possibleTiles.length)];
+      oldZeroPosition = game.zeroLocation;
       Move move = game.getMoveFromTap(tappedTile)!;
       moves.add(move);
-      oldZeroPosition = move.tiles.first.location!;
       _move(move, animate: false);
     }
+    return moves;
   }
 
   List<Move> reverseMoves() {
@@ -93,20 +95,6 @@ class GameController {
       Move reverseMove = game.getReverse(move);
       reverse.insert(0, reverseMove);
     }
-    // for (Move move in _moves) {
-    //   if (move == MoveDirection.up) {
-    //     reverse.insert(0, MoveDirection.down);
-    //   }
-    //   else if (move == MoveDirection.down) {
-    //     reverse.insert(0, MoveDirection.up);
-    //   }
-    //   else if (move == MoveDirection.right) {
-    //     reverse.insert(0, MoveDirection.left);
-    //   }
-    //   else {
-    //     reverse.insert(0, MoveDirection.right);
-    //   }
-    // }
     return reverse;
   }
 
