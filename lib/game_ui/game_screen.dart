@@ -37,7 +37,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     return Stack(
       fit: StackFit.expand,
       children: [
-        SvgPicture.asset('assets/svg/comic_bg.svg'),
+        SvgPicture.asset('assets/svg/comic_bg.svg', fit: BoxFit.cover),
         Padding(padding: const EdgeInsets.all(20), child: GameBoard(gameController, mode: 'ivory',)),
       ]
     );

@@ -39,7 +39,6 @@ class GameController {
   }
 
   void _move(Move move, {bool animate = false}) {
-    // game.tap(tile, animate: animate);
     game.doMove(move, animate: animate);
     game.completeTap(animate: animate);
   }
@@ -86,6 +85,7 @@ class GameController {
       moves.add(move);
       _move(move, animate: false);
     }
+    game.reset();
     return moves;
   }
 
