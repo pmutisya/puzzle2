@@ -60,7 +60,6 @@ class _GameAppState extends State<GameApp> with SingleTickerProviderStateMixin {
           child: Stack(
             children: const [
               GameScreen()
-              // GameBoard(gameController, mode: mode, assetImage: 'assets/images/image_bg.jpg',)
             ],
           ),
         ),

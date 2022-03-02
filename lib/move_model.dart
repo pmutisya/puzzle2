@@ -6,13 +6,14 @@ Random random = Random();
 
 ///Processes and stores the moves. Can be used to play the game
 ///automatically by calling shuffle and reverseMoves to solve
-class GameController {
-  final Game game;
+class MoveModel {
+  final Game _game;
   final List<Move> _moves;
 
-  GameController.startSorted(int length) :
-    game = Game(length),
+  MoveModel.fromGame(this._game) :
     _moves = [];
+
+  int get length => _moves.length;
 
   //called from an actual tap on the game board
   void addMove(Move move) {
@@ -20,8 +21,8 @@ class GameController {
   }
 
   bool isLegalTap(Tile tile) {
-    Point<int> loc = game.getLocation(tile.position);
-    Point<int> zeroLoc = game.zeroLocation;
+    Point<int> loc = _game.getLocation(tile.position);
+    Point<int> zeroLoc = _game.zeroLocation;
     if (loc.x == zeroLoc.x || loc.y == zeroLoc.y) {
       if (loc.x == zeroLoc.x && loc.y != zeroLoc.y) { //vertical match
         return true;
@@ -33,14 +34,13 @@ class GameController {
     return false; //either the zero tile or too far away from it
   }
 
-  void resetGame() {
-    game.reset();
+  void reset() {
     _moves.clear();
   }
 
   void _move(Move move, {bool animate = false}) {
-    game.doMove(move, animate: animate);
-    game.completeTap(animate: animate);
+    _game.doMove(move, animate: animate);
+    _game.completeTap(animate: animate);
   }
 
   List<Move> shuffle(int numberOfShuffles, {bool animate = false}) {
@@ -49,20 +49,20 @@ class GameController {
     List<Move> moves = [];
     for (int k = 0; k < numberOfShuffles; k++) {
       List<Tile> possibleTiles = [];
-      List<Tile> legalTiles = game.getLegalTiles();
+      List<Tile> legalTiles = _game.getLegalTiles();
       for (Tile tile in legalTiles) {
         if (tile.location != oldZeroPosition) {
           possibleTiles.add(tile);
         }
       }
       Tile tappedTile = possibleTiles[random.nextInt(possibleTiles.length)];
-      oldZeroPosition = game.zeroLocation;
-      Move move = game.getMoveFromTap(tappedTile)!;
+      oldZeroPosition = _game.zeroLocation;
+      Move move = _game.getMoveFromTap(tappedTile)!;
       moves.add(move);
       // oldZeroPosition = move.tiles.first.location!;
       _move(move, animate: animate);
     }
-    game.reset();
+    _game.reset();
     _moves.addAll(moves);
     return moves;
   }
@@ -73,26 +73,26 @@ class GameController {
     List<Move> moves = [];
     for (int k = 0; k < numberOfShuffles; k++) {
       List<Tile> possibleTiles = [];
-      List<Tile> legalTiles = game.getLegalTiles();
+      List<Tile> legalTiles = _game.getLegalTiles();
       for (Tile tile in legalTiles) {
         if (tile.location != oldZeroPosition) {
           possibleTiles.add(tile);
         }
       }
       Tile tappedTile = possibleTiles[random.nextInt(possibleTiles.length)];
-      oldZeroPosition = game.zeroLocation;
-      Move move = game.getMoveFromTap(tappedTile)!;
+      oldZeroPosition = _game.zeroLocation;
+      Move move = _game.getMoveFromTap(tappedTile)!;
       moves.add(move);
       _move(move, animate: false);
     }
-    game.reset();
+    _game.reset();
     return moves;
   }
 
   List<Move> reverseMoves() {
     List<Move> reverse = [];
     for (Move move in _moves) {
-      Move reverseMove = game.getReverse(move);
+      Move reverseMove = _game.getReverse(move);
       reverse.insert(0, reverseMove);
     }
     return reverse;

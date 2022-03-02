@@ -4,18 +4,18 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:puzzle2/game_controller.dart';
+import 'package:puzzle2/move_model.dart';
 
 import 'domain.dart';
 import 'tiles.dart';
 
 class GameBoard extends StatefulWidget {
-  final GameController gameController;
+  final Game game;
   final String mode;
   final String? assetImage;
   final bool showingOverlay;
 
-  const GameBoard(this.gameController, {required this.mode,
+  const GameBoard(this.game, {required this.mode,
     this.assetImage, this.showingOverlay = false,
     Key? key}) : super(key: key);
 
@@ -25,7 +25,7 @@ class GameBoard extends StatefulWidget {
 
 class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   late Game game;
-  late GameController gameController;
+  late MoveModel movesModel;
 
   late AnimationController _controller;
   late CurvedAnimation _moveTileAnimation;
@@ -43,8 +43,8 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    gameController = widget.gameController;
-    game = gameController.game;
+    game = widget.game;
+    movesModel = widget.game.movesModel;
 
     _controller = AnimationController(vsync: this, duration: defaultDuration);
     _controller.addListener(() {setState(() {});});
@@ -96,7 +96,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
     if (move != null) {
      // activeTile = null;
       game.doMove(move);
-      gameController.addMove(move);
+      movesModel.addMove(move);
       animateExecutedMove();
    }
    else {

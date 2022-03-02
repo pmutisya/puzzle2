@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'move_model.dart';
+
 class Tile {
   final int value;
   int score = 0;
@@ -51,42 +53,46 @@ class Move {
 abstract class GameListener {
   void moveStarted();
   void moveComplete();
+  void gameWon();
 }
 
 class Game {
   final int length;
   final int columns;
 
-  int moves = 0;
   final List<Tile> _tiles;
 
   late int zeroPosition;
   late Point<int> zeroLocation;
 
-  GameListener? _gameListener;
+  late MoveModel movesModel;
+  final List<GameListener> _gameListeners;
 
   ///Creates a game with tiles already in
   ///order. This is useful for starting a game
   ///with the tiles in order then shuffling them
   ///visibly
   Game(this.length) :
+      _gameListeners = [],
       _tiles = List<Tile>.generate(length - 1, (index) => Tile(index+1, index)),
-    columns = sqrt(length).toInt() {
+    columns = sqrt(length).toInt()
+  {
     zeroPosition = length;
     zeroLocation = Point<int>(columns - 1, columns - 1);
     for (Tile tile in _tiles) {
       tile.location = getLocation(tile.position);
       tile.score = distanceFromTrue(tile);
     }
+    movesModel = MoveModel.fromGame(this);
   }
 
-  void setGameListener(GameListener newListener) => _gameListener = newListener;
+  void addGameListener(GameListener newListener) => _gameListeners.add(newListener);
 
   int get rows => length ~/ columns;
 
   void reset() {
     int l = length;
-    moves = 0;
+    movesModel.reset();
     // _tiles.clear();
     for (int k = 0; k < l - 1; k++) {
       Tile tile = _tiles[k];
@@ -276,19 +282,27 @@ class Game {
       tile.score = distanceFromTrue(tile);
     }
     // if (animate) {
-      _gameListener?.moveComplete();
+    for(GameListener listener in _gameListeners) {
+      listener.moveComplete();
+    }
     // }
+    if (won) {
+      for (GameListener _gameListener in _gameListeners) {
+        _gameListener.gameWon();
+      }
+    }
   }
 
   bool get won {
     for (Tile tile in _tiles) {
-      if (tile.position != tile.value - 1) {
+      if (!tile.isCorrect) {
         // won =  false;
         return false;
       }
     }
     // notifyListeners();
-    return moves > 0;
+    print('WON moves:${movesModel.length}');
+    return movesModel.length > 0;
   }
 
   String toDebug() {

@@ -4,7 +4,7 @@ import 'package:keymap/keymap.dart';
 import 'package:puzzle2/game_board.dart';
 
 import 'domain.dart';
-import 'game_controller.dart';
+import 'move_model.dart';
 
 class GameRunner extends StatefulWidget {
   const GameRunner({Key? key}) : super(key: key);
@@ -17,7 +17,7 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
   late AnimationController _controller;
   late Game game;
   late GlobalKey<GameBoardState> gameBoardKey;
-  late GameController gameController;
+  late MoveModel movesModel;
 
   static const Duration moveDuration = Duration(milliseconds: 250);
   List<Move> animatingMoves = [];
@@ -27,11 +27,11 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
     super.initState();
 
     gameBoardKey = GlobalKey<GameBoardState>();
-    gameController = GameController.startSorted(16);
-    game = gameController.game;
+    game = Game(16);
+    movesModel = game.movesModel;
     game.reset();
 
-    game.setGameListener(this);
+    game.addGameListener(this);
 
     _controller = AnimationController(vsync: this, duration: GameBoardState.defaultDuration);
   }
@@ -46,6 +46,9 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
       }
     });
   }
+  @override
+  void gameWon() {}
+
   void doNextMove() {
     if (animatingMoves.isNotEmpty) {
       Move move = animatingMoves.removeAt(0);
@@ -55,23 +58,23 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
   }
 
   void shuffle({bool animate = true}) {
-    animatingMoves = gameController.shuffle(20, animate: animate);
+    animatingMoves = movesModel.shuffle(20, animate: animate);
     doNextMove();
   }
 
   void shuffleImmediately() {
-    gameController.shuffleImmediately(20);
+    movesModel.shuffleImmediately(20);
     gameBoardKey.currentState!.setState(() {
     });
   }
 
   void reverseSolve() {
-    animatingMoves = gameController.reverseMoves();
+    animatingMoves = movesModel.reverseMoves();
     doNextMove();
   }
 
   void resetGame() {
-    gameController.resetGame();
+    game.reset();
     gameBoardKey.currentState!.setState(() {
     });
   }
@@ -98,7 +101,7 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
               width: double.infinity, height: double.infinity,
               color: Colors.black,
             ),
-            GameBoard(gameController, showingOverlay: true,
+            GameBoard(game, showingOverlay: true,
               mode: 'rounded', key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
             )
           ],
