@@ -29,18 +29,21 @@ class _PhoneScreenState extends State<PhoneScreen> with SingleTickerProviderStat
     super.dispose();
   }
   Widget getScoreRing() {
-    return Container(
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: game.won? Colors.lightGreenAccent : Colors.red,
-        border: Border.all(color: Colors.black, width: 3.0),
-        boxShadow: const [
-          BoxShadow(color: Colors.black45, offset: Offset(4, 4), spreadRadius: 4.0, blurRadius: 8)
-        ]
+    return Transform.translate(
+      offset: const Offset(-40, -40),
+      child: Container(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: game.won? Colors.lightGreenAccent : Colors.red,
+          border: Border.all(color: Colors.black, width: 16.0),
+          boxShadow: const [
+            BoxShadow(color: Colors.black45, offset: Offset(4, 4), spreadRadius: 4.0, blurRadius: 8)
+          ]
+        ),
+        padding: const EdgeInsets.all(28),
+        child: Text('${(game.percentCorrect*100).round().toInt()}',
+          style: const TextStyle(fontSize: 48), textAlign: TextAlign.center),
       ),
-      padding: const EdgeInsets.all(8),
-      child: Text('${(game.percentCorrect*100).round().toInt()}',
-        style: const TextStyle(fontSize: 48), textAlign: TextAlign.center),
     );
   }
   @override
