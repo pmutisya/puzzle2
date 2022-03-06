@@ -309,7 +309,7 @@ class Game {
     buffer.write('SCORE: ${(100*percentCorrect).toInt()}  \n');
     for (int row = 0; row < rows; row++) {
       buffer.write('|');
-      for (int col =0; col < columns; col++) {
+      for (int col = 0; col < columns; col++) {
         Tile tile = getTileAt(col, row)!;
         String val = tile.value < 10? ' ${tile.value}' : '${tile.value}';
         buffer.write('$val |');

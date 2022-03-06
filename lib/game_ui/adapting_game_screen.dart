@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../domain.dart';
 
-class PhoneScreen extends StatefulWidget {
+class AdaptingGameScreen extends StatefulWidget {
   final Game game;
-  const PhoneScreen(this.game, {Key? key}) : super(key: key);
+  const AdaptingGameScreen(this.game, {Key? key}) : super(key: key);
 
   @override
-  _PhoneScreenState createState() => _PhoneScreenState();
+  _AdaptingGameScreenState createState() => _AdaptingGameScreenState();
 }
 
-class _PhoneScreenState extends State<PhoneScreen> with SingleTickerProviderStateMixin,
+class _AdaptingGameScreenState extends State<AdaptingGameScreen> with SingleTickerProviderStateMixin,
   GameListener{
   late AnimationController _controller;
   late Game game;
