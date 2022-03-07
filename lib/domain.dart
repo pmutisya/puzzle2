@@ -52,8 +52,9 @@ class Move {
 
 abstract class GameListener {
   void moveStarted();
-  void moveComplete();
+  void moveComplete(int score);
   void gameWon();
+  void gameRestarted();
 }
 
 class Game {
@@ -110,6 +111,9 @@ class Game {
       tile.canMove = (p1.x == p0.x) || (p1.y == p0.y);
         //(((p1.x - p0.x).abs() == 1 && p0.y == p1.y)|| ((p1.y - p0.y).abs() == 1 && p0.x == p1.x));
       tile.score = distanceFromTrue(tile);
+    }
+    for (GameListener listener in _gameListeners) {
+      listener.gameRestarted();
     }
   }
 
@@ -283,7 +287,7 @@ class Game {
     }
     // if (animate) {
     for(GameListener listener in _gameListeners) {
-      listener.moveComplete();
+      listener.moveComplete((percentCorrect*100).round());
     }
     // }
     if (won) {
