@@ -6,14 +6,15 @@ import 'package:puzzle2/game_board.dart';
 import 'domain.dart';
 import 'move_model.dart';
 
-class GameRunner extends StatefulWidget {
-  const GameRunner({Key? key}) : super(key: key);
+///A test widget to run simulated games only
+class GameTester extends StatefulWidget {
+  const GameTester({Key? key}) : super(key: key);
 
   @override
-  _GameRunnerState createState() => _GameRunnerState();
+  _GameTesterState createState() => _GameTesterState();
 }
 
-class _GameRunnerState extends State<GameRunner> with GameListener {
+class _GameTesterState extends State<GameTester> with GameListener {
   late Game game;
   late GlobalKey<GameBoardState> gameBoardKey;
   late MoveModel movesModel;
@@ -120,7 +121,7 @@ void main() {
     home: Container(
       color: Colors.blue,
       padding: const EdgeInsets.all(20.0),
-      child: const GameRunner(),
+      child: const GameTester(),
     ),
   ));
 }
