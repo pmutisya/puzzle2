@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:puzzle2/game_ui/adapting_game_screen.dart';
 
 import '../domain.dart';
 import '../move_model.dart';
 import '../game_board.dart';
+import 'game_widgets.dart';
 
 class GameScreen extends StatefulWidget {
   const GameScreen({Key? key}) : super(key: key);
@@ -41,42 +41,19 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     return Stack(
       fit: StackFit.expand,
       children: [
-        SvgPicture.asset('assets/svg/comic_bg.svg', fit: BoxFit.cover),
-        Padding(padding: const EdgeInsets.all(20), child: GameBoard(game, mode: 'ivory',)),
+        // SvgPicture.asset('assets/svg/comic_bg.svg', fit: BoxFit.cover),
+        GameEffectLayer(game),
+        Padding(padding: const EdgeInsets.all(20), child: GameBoard(game, mode: 'rounded',)),
         AdaptingGameScreen(game),
+        Positioned(
+          right: 10, top: 10,
+          child: ResultsWidget(game),
+        ),
+        Positioned(
+          right: 10, bottom: 10,
+          child: GameStartButton(game),
+        )
       ]
     );
   }
 }
-
-class ResultsWidget extends StatefulWidget {
-  const ResultsWidget({Key? key,}) : super(key: key);
-
-  @override
-  State<ResultsWidget> createState() => _ResultsWidgetState();
-}
-
-class _ResultsWidgetState extends State<ResultsWidget> with SingleTickerProviderStateMixin {
-  int gamesPlayed = 0;
-  int gamesWon = 0;
-
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
-}
-
