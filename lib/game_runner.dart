@@ -13,8 +13,7 @@ class GameRunner extends StatefulWidget {
   _GameRunnerState createState() => _GameRunnerState();
 }
 
-class _GameRunnerState extends State<GameRunner> with GameListener, SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+class _GameRunnerState extends State<GameRunner> with GameListener {
   late Game game;
   late GlobalKey<GameBoardState> gameBoardKey;
   late MoveModel movesModel;
@@ -33,19 +32,22 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
 
     game.addGameListener(this);
 
-    _controller = AnimationController(vsync: this, duration: GameBoardState.defaultDuration);
   }
 
   @override
   void moveStarted(){}
   @override
-  void moveComplete() {
+  void moveComplete(int score) {
     setState(() {
       if (animatingMoves.isNotEmpty) {
         doNextMove();
       }
     });
   }
+
+  @override
+  void gameRestarted() {}
+
   @override
   void gameWon() {}
 
@@ -77,12 +79,6 @@ class _GameRunnerState extends State<GameRunner> with GameListener, SingleTicker
     game.reset();
     gameBoardKey.currentState!.setState(() {
     });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
