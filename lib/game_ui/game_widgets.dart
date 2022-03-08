@@ -1,5 +1,6 @@
 import 'dart:math' show pi;
 import 'package:flutter/material.dart';
+import 'package:puzzle2/game_ui/game_controller.dart';
 
 import '../domain.dart';
 import 'effects.dart';
@@ -92,9 +93,10 @@ class _ResultsWidgetState extends State<ResultsWidget>
 }
 
 class GameStartButton extends StatefulWidget {
+  final GameController controller;
   final Game game;
 
-  const GameStartButton(this.game, {Key? key}) : super(key: key);
+  const GameStartButton(this.game, this.controller, {Key? key}) : super(key: key);
 
   @override
   State<GameStartButton> createState() => _GameStartButtonState();
@@ -125,7 +127,7 @@ class _GameStartButtonState extends State<GameStartButton>
     return Row(
       children: [
         GestureDetector(
-          onTap: () { widget.game.movesModel.shuffle(20);},
+          onTap: () { widget.controller.shuffle();},
           child: Container(
             decoration: getBoxDecoration(),
             child: const Icon(Icons.shuffle_outlined),

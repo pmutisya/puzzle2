@@ -23,7 +23,7 @@ class GameBoard extends StatefulWidget {
   GameBoardState createState() => GameBoardState();
 }
 
-class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
+class GameBoardState extends State<GameBoard> with TickerProviderStateMixin, GameListener {
   late Game game;
   late MoveModel movesModel;
 
@@ -44,6 +44,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     game = widget.game;
+    widget.game.addGameListener(this);
     movesModel = widget.game.movesModel;
 
     _controller = AnimationController(vsync: this, duration: defaultDuration);
@@ -144,7 +145,8 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
         double tileSize = side/game.columns;
 
         List<Widget> children = [];
-        Widget panel = SizedBox(
+        Widget panel = Container(
+          color: Colors.transparent,
           // alignment: Alignment.center,
           width: side, height: side,);
         children.add(panel);
@@ -182,7 +184,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
             style: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),);
           Positioned stats = Positioned(child: IgnorePointer(
             child: Container(
-              color: Colors.white.withOpacity(.5), padding: const EdgeInsets.all(12),
+              color: Colors.yellow.withOpacity(.5), padding: const EdgeInsets.all(12),
               child: text,
             ),
           ), right: 0, bottom: 0,);
@@ -192,9 +194,6 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
         return Container(
           alignment: Alignment.center,
           width: double.infinity, height: double.infinity,
-          decoration: BoxDecoration(
-              border: Border.all(color: Colors.black)
-          ),
           child: Stack(
             fit: StackFit.loose,
             alignment: Alignment.center,
@@ -217,6 +216,24 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin {
       widget.mode =='gradient stop'? GradientStopTile(startColor: Colors.red, endColor: Colors.green, tile: tile, size: size, game: game) :
       SimpleTile(tile: tile, game: game, size: size),
     );
+  }
+
+  @override
+  void gameRestarted() {
+    setState(() {
+    });
+  }
+
+  @override
+  void gameWon() {
+  }
+
+  @override
+  void moveComplete(int score) {
+  }
+
+  @override
+  void moveStarted() {
   }
 
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:puzzle2/game_ui/adapting_game_screen.dart';
+import 'package:puzzle2/game_board.dart';
+import 'package:puzzle2/game_ui/game_controller.dart';
 
 import '../domain.dart';
 import '../move_model.dart';
-import '../game_board.dart';
 import 'game_widgets.dart';
 
 class GameScreen extends StatefulWidget {
@@ -16,8 +16,10 @@ class GameScreen extends StatefulWidget {
 class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
-  late MoveModel gameController;
+  late MoveModel gameMovesModel;
   late Game game;
+
+  GlobalKey<GameBoardState> gameboardKey = GlobalKey();
 
   int gamesPlayed = 0;
   int gamesWon = 0;
@@ -27,7 +29,7 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
     super.initState();
     _controller = AnimationController(vsync: this);
     game = Game(16);
-    gameController = game.movesModel;
+    gameMovesModel = game.movesModel;
   }
 
   @override
@@ -38,20 +40,24 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
   
   @override
   Widget build(BuildContext context) {
+    GameBoard gameBoard = GameBoard(game, showingOverlay: true, key: gameboardKey,
+      mode: 'rounded', assetImage: 'assets/images/image_bg.jpg',
+    );
+    GameController gameController = GameController(game, gameboardKey);
     return Stack(
       fit: StackFit.expand,
       children: [
         // SvgPicture.asset('assets/svg/comic_bg.svg', fit: BoxFit.cover),
         GameEffectLayer(game),
-        Padding(padding: const EdgeInsets.all(20), child: GameBoard(game, mode: 'rounded',)),
-        AdaptingGameScreen(game),
+        Padding(padding: const EdgeInsets.all(20),
+          child: gameBoard),
         Positioned(
           right: 10, top: 10,
           child: ResultsWidget(game),
         ),
         Positioned(
           right: 10, bottom: 10,
-          child: GameStartButton(game),
+          child: GameStartButton(game, gameController),
         )
       ]
     );
