@@ -6,14 +6,14 @@ import '../domain.dart';
 import '../move_model.dart';
 import 'game_widgets.dart';
 
-class GameScreen extends StatefulWidget {
-  const GameScreen({Key? key}) : super(key: key);
+class GameApplication extends StatefulWidget {
+  const GameApplication({Key? key}) : super(key: key);
 
   @override
-  _GameScreenState createState() => _GameScreenState();
+  _GameApplicationState createState() => _GameApplicationState();
 }
 
-class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateMixin {
+class _GameApplicationState extends State<GameApplication> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   late MoveModel gameMovesModel;

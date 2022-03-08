@@ -53,7 +53,7 @@ class _GameAppState extends State<GameApp> with SingleTickerProviderStateMixin {
       child: Material(
           child: Stack(
             children: const [
-              GameScreen()
+              GameApplication()
             ],
           ),
       ));
