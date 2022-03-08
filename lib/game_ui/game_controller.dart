@@ -8,7 +8,7 @@ import '../move_model.dart';
 class GameController extends GameListener {
   final Game game;
 
-  static const Duration moveDuration = Duration(milliseconds: 250);
+  static const Duration moveDuration = Duration(milliseconds: 100);
   List<Move> animatingMoves = [];
   late GlobalKey<GameBoardState> gameBoardKey;
   late MoveModel movesModel;
@@ -49,7 +49,7 @@ class GameController extends GameListener {
   }
 
   void shuffleImmediately() {
-    movesModel.shuffleImmediately(20);
+    movesModel.shuffleImmediately(20,);
   }
 
   void reverseSolve() {

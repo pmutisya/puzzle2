@@ -15,6 +15,80 @@ BoxDecoration getBoxDecoration() {
   );
 }
 
+class ScoreWidget extends StatefulWidget {
+  final Game game;
+  const ScoreWidget(this.game, {Key? key}) : super(key: key);
+
+  @override
+  State<ScoreWidget> createState() => _ScoreWidgetState();
+}
+
+class _ScoreWidgetState extends State<ScoreWidget> with SingleTickerProviderStateMixin,
+  GameListener {
+  late AnimationController _controller;
+  double score = 0;
+  double oldScore = 0;
+  double displayedScore = 0;
+  double delta = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
+    _controller.addListener(() {
+      setState(() {
+        displayedScore = oldScore + delta * _controller.value;
+      });
+    });
+    widget.game.addGameListener(this);
+    oldScore = widget.game.score/100;
+    score = widget.game.score/100;
+    delta = 0;
+    displayedScore = score;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 60, height: 60,
+      child: CircularProgressIndicator(
+        value: displayedScore, strokeWidth: 8,
+      ),
+    );
+  }
+
+  @override
+  void gameRestarted() {
+    oldScore = widget.game.score/100;
+    score = widget.game.score/100;
+    delta = 0;
+  }
+
+  @override
+  void gameWon() {
+  }
+
+  @override
+  void moveComplete(int newScore) {
+    setState(() {
+      oldScore = score;
+      score = newScore/100;
+      delta = score - oldScore;
+      _controller.forward(from: 0);
+    });
+  }
+
+  @override
+  void moveStarted() {
+  }
+}
+
 class ResultsWidget extends StatefulWidget {
   final Game game;
   const ResultsWidget(this.game, {Key? key,}) : super(key: key);
@@ -126,6 +200,14 @@ class _GameStartButtonState extends State<GameStartButton>
   Widget build(BuildContext context) {
     return Row(
       children: [
+        GestureDetector(
+          onTap: (){ widget.controller.reverseSolve();},
+          child: Container(
+            decoration: getBoxDecoration(),
+            child: Icon(Icons.help_outline),
+          ),
+        ),
+        const SizedBox(width: 12,),
         GestureDetector(
           onTap: () { widget.controller.shuffle();},
           child: Container(

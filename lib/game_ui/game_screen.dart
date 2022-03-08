@@ -58,7 +58,11 @@ class _GameScreenState extends State<GameScreen> with SingleTickerProviderStateM
         Positioned(
           right: 10, bottom: 10,
           child: GameStartButton(game, gameController),
-        )
+        ),
+        Positioned(
+          left: 10, bottom: 10,
+          child: ScoreWidget(game),
+        ),
       ]
     );
   }
