@@ -263,8 +263,9 @@ class IvoryTile extends TileWidget {
               Transform.translate(offset: Offset(0, -h/10), //Text
                 child: Center(
                   // top: h/5, left: w/2 - h/5,
-                  child: Text('${tile.value}', style: _textStyle.copyWith(fontSize: h*3/8),
-                    textAlign: TextAlign.center,),
+                  child: Text('${tile.value}', style: _textStyle.copyWith(fontSize: h*3/8,
+                    fontFamily: 'MochiyPopOne',),
+                  textAlign: TextAlign.center,),
                 ),
               ),
             ],
@@ -320,7 +321,9 @@ class CandyTile extends TileWidget {
           BoxShadow(color: pinkShadow, blurRadius: 0, offset: offset)
         ]: null,
       ),
-      child: tile.isVisible? Text('${tile.value}', style: TextStyle(color: red, fontSize: calcTextSize(size)),) :
+      child: tile.isVisible? Text('${tile.value}',
+        style: TextStyle(color: red, fontSize: calcTextSize(size),
+          fontFamily: 'MochiyPopOne',),) :
       Container(),
     );
 

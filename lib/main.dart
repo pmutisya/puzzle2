@@ -15,11 +15,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Game Tester',
       theme: ThemeData(
-          fontFamily: 'MochiyPopOne'
+          fontFamily: 'Poppins'
       ),
       darkTheme: ThemeData(
           brightness: Brightness.dark,
-          fontFamily: 'MochiyPopOne'
+          fontFamily: 'Poppins'
       ),
       home: const GameApp(),
     );
