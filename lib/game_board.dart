@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:puzzle2/move_model.dart';
 
 import 'domain.dart';
-import 'tiles.dart';
+import 'game_ui/tiles.dart';
 
 class GameBoard extends StatefulWidget {
   final Game game;

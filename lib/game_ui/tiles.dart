@@ -3,8 +3,8 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-import 'domain.dart';
-import 'image_tiler.dart';
+import '../domain.dart';
+import '../image_tiler.dart';
 
 const List<String> tileTypes = ['simple', 'rounded', 'ivory', 'image', 'candy',
   'plastic', 'gradient', 'gradient stop'];
