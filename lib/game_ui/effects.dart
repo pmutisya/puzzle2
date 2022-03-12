@@ -64,7 +64,7 @@ class StarsPainter extends CustomPainter {
       // double mx = 1/offset.x, my = 1/offset.y;
       // Offset center = Offset(c.dx + s.x * rx * radius, c.dy + s.y * ry * radius);
       Offset center = Offset(c.dx + offset.x*rx*radius, c.dy + offset.y*ry*radius);
-      Path star = Shapes.getStar(5, center, outerRadius, innerRadius);
+      Path star = Shapes.getStar(5, center, outerRadius*radius, innerRadius*radius);
       canvas.drawPath(star, starPaint);
     }
   }
