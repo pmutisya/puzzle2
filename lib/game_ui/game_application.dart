@@ -67,3 +67,10 @@ class _GameApplicationState extends State<GameApplication> with SingleTickerProv
     );
   }
 }
+
+class GameTheme {
+  List<GameEffectLayer> effects;
+  String tileType;
+
+  GameTheme(this.effects, this.tileType);
+}

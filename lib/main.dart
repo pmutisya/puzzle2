@@ -49,13 +49,12 @@ class _GameAppState extends State<GameApp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return KeyboardWidget(bindings: const [],
-      child: Material(
-          child: Stack(
-            children: const [
-              GameApplication()
-            ],
-          ),
-      ));
+    return Material(
+        child: Stack(
+          children: const [
+            GameApplication()
+          ],
+        ),
+    );
   }
 }

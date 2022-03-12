@@ -4,6 +4,7 @@ import 'package:puzzle2/game_ui/game_controller.dart';
 
 import '../domain.dart';
 import 'effects.dart';
+import 'effects_widgets.dart';
 
 BoxDecoration getBoxDecoration() {
   return BoxDecoration(
@@ -305,26 +306,17 @@ class _GameEffectLayerState extends State<GameEffectLayer>
           color: Colors.orangeAccent,
           width: double.infinity, height: double.infinity,
         ),
-        CustomPaint(
-          painter: BeamsPainter(
-            innerRadius: innerRadiusTween.evaluate(_controller),
-            angle: angleTween.evaluate(_controller),
-            color: colorTween.evaluate(_controller)!,
-          ),
+        BeamsEffect(
+          innerRadius: innerRadiusTween.evaluate(_controller),
+          progress: _controller.value,
+          color: colorTween.evaluate(_controller)!,
         ),
-        CustomPaint(
-          painter: BeamsPainter(
-            beams: 11,
-            angle: angleTween.evaluate(_controller),
-            innerRadius: 0, color: Colors.deepOrangeAccent.withOpacity(.5),
-          ),
+        BeamsEffect(
+          numberOfBeams: 11, progress: _controller.value,
+          innerRadius: 0, color: Colors.deepOrangeAccent.withOpacity(.5),
         ),
-        CustomPaint(
-          painter: StarsPainter(stars, radius: _controller.value),
-        ),
-        CustomPaint(
-          painter: StarsPainter(blueStars, color: Colors.indigo, radius: _controller.value),
-        )
+        StarsField(progress: _controller.value, starCount: 20,),
+        StarsField(progress: _controller.value, starCount: 10, starColor: Colors.indigo,),
       ],
     );
   }
