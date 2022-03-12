@@ -4,12 +4,42 @@ import 'dart:math' show pi;
 
 import 'effects.dart';
 
-class StarsField extends StatefulWidget {
+abstract class EffectsWidget extends StatefulWidget {
   final double progress;
+  const EffectsWidget({required this.progress, Key? key}) : super(key: key);
+}
+
+class ColoredPanelEffect extends EffectsWidget {
+  final Color startColor, endColor;
+  final Color color;
+
+  ColoredPanelEffect({
+    required progress, required this.startColor, required this.endColor, Key? key
+  }):
+    color = ColorTween(begin: startColor, end: endColor).lerp(progress)!,
+  super(progress: progress, key: key);
+
+  @override
+  State<StatefulWidget> createState() {
+    return _ColoredPanelState();
+  }
+}
+
+class _ColoredPanelState extends State<ColoredPanelEffect> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: widget.color,
+      width: double.infinity, height: double.infinity,
+    );
+  }
+}
+
+class StarsField extends EffectsWidget {
   final int starCount;
   final Color starColor;
-  const StarsField({required this.progress,
-    this.starColor = Colors.white, this.starCount = 5, Key? key}) : super(key: key);
+  const StarsField({required progress,
+    this.starColor = Colors.white, this.starCount = 5, Key? key}) : super(progress: progress, key: key);
 
   @override
   State<StarsField> createState() => StarsFieldState();
@@ -36,8 +66,7 @@ class StarsFieldState extends State<StarsField> {
   }
 }
 
-class BeamsEffect extends StatefulWidget {
-  final double progress;
+class BeamsEffect extends EffectsWidget {
   final Color color;
   final int numberOfBeams;
   final Alignment alignment;
@@ -45,12 +74,12 @@ class BeamsEffect extends StatefulWidget {
   final bool reverse;
   final double startingAngle;
 
-  const BeamsEffect({Key? key, this.progress = 0,
+  const BeamsEffect({Key? key, progress = 0,
     this.color = Colors.red, this.numberOfBeams = 5, this.innerRadius = .001,
     this.reverse = false, this.startingAngle = pi/4,
     this.alignment = Alignment.center}) :
       // assert(angle >= 0 && angle <= 2.0*pi, 'Angle must be between 0 and 2𝞹'),
-      super(key: key);
+      super(progress: progress, key: key);
 
   @override
   State<BeamsEffect> createState() => _BeamsEffectState();
@@ -71,14 +100,14 @@ class _BeamsEffectState extends State<BeamsEffect> {
 }
 
 
-class CircularGlowWidget extends StatefulWidget {
+class CircularGlowWidget extends EffectsWidget {
   final Color centerColor;
   final Duration glowDuration;
   final double maxRadius, minRadius;
 
   const CircularGlowWidget({Key? key, required this.centerColor,
     this.maxRadius = .5, this.minRadius = 0,
-    required this.glowDuration}) : super(key: key);
+    required this.glowDuration}) : super(progress: 0, key: key);
 
   @override
   State<CircularGlowWidget> createState() => _CircularGlowWidgetState();
