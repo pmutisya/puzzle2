@@ -1,25 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:puzzle2/game_board.dart';
+import 'package:puzzle2/game_ui/effects_widgets.dart';
 import 'package:puzzle2/game_ui/game_controller.dart';
 
 import 'domain.dart';
 import 'move_model.dart';
 import 'game_ui/game_widgets.dart';
 
-class GameApplication extends StatefulWidget {
-  const GameApplication({Key? key}) : super(key: key);
+class GamePlayingScreen extends StatefulWidget {
+  const GamePlayingScreen({Key? key}) : super(key: key);
 
   @override
-  _GameApplicationState createState() => _GameApplicationState();
+  _GamePlayingScreenState createState() => _GamePlayingScreenState();
 }
 
-class _GameApplicationState extends State<GameApplication> with SingleTickerProviderStateMixin {
+class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   late MoveModel gameMovesModel;
   late Game game;
 
-  GlobalKey<GameBoardState> gameboardKey = GlobalKey();
+  GlobalKey<GameBoardState> gameBoardKey = GlobalKey();
 
   int gamesPlayed = 0;
   int gamesWon = 0;
@@ -40,17 +41,17 @@ class _GameApplicationState extends State<GameApplication> with SingleTickerProv
   
   @override
   Widget build(BuildContext context) {
-    GameBoard gameBoard = GameBoard(game, showingOverlay: true, key: gameboardKey,
+    GameBoard gameBoard = GameBoard(game, showingOverlay: true, key: gameBoardKey,
       mode: 'rounded', assetImage: 'assets/images/image_bg.jpg',
     );
-    GameController gameController = GameController(game, gameboardKey);
+    GameController gameController = GameController(game, gameBoardKey);
     return Stack(
       fit: StackFit.expand,
       children: [
         // SvgPicture.asset('assets/svg/comic_bg.svg', fit: BoxFit.cover),
-        GameEffectLayer(game),
-        Padding(padding: const EdgeInsets.all(20),
-          child: gameBoard),
+        GameEffectLayer(game, gameBoard),
+        // Padding(padding: const EdgeInsets.all(20),
+        //   child: gameBoard),
         Positioned(
           right: 10, top: 10,
           child: ResultsWidget(game),
@@ -68,10 +69,13 @@ class _GameApplicationState extends State<GameApplication> with SingleTickerProv
   }
 }
 
-class GameTheme {
-  final List<GameEffectLayer> effects;
-  final List<GameEffectLayer>? aboveEffects;
+abstract class GameTheme {
   final String tileType;
+  final String name;
 
-  const GameTheme({required this.effects, required this.tileType, this.aboveEffects});
+  const GameTheme({required this.name, required this.tileType});
+
+  List<EffectsWidget> getEffects(double progress, Game game);
+  List<EffectsWidget> getAboveGameEffects(double progress, Game game);
+  List<EffectsWidget> getWinEffects(double progress, Game game);
 }

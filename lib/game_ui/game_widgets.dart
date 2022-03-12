@@ -1,10 +1,11 @@
-import 'dart:math' show pi;
 import 'package:flutter/material.dart';
-import 'package:puzzle2/game_ui/game_controller.dart';
+import 'package:puzzle2/game_board.dart';
+import 'package:puzzle2/themes.dart';
 
 import '../domain.dart';
-import 'effects.dart';
-import 'effects_widgets.dart';
+import '../game_application.dart';
+import '../game_board.dart';
+import '../game_ui/game_controller.dart';
 
 BoxDecoration getBoxDecoration() {
   return BoxDecoration(
@@ -205,7 +206,7 @@ class _GameStartButtonState extends State<GameStartButton>
           onTap: (){ widget.controller.reverseSolve();},
           child: Container(
             decoration: getBoxDecoration(),
-            child: Icon(Icons.help_outline),
+            child: const Icon(Icons.help_outline),
           ),
         ),
         const SizedBox(width: 12,),
@@ -259,7 +260,8 @@ class _GameStartButtonState extends State<GameStartButton>
 
 class GameEffectLayer extends StatefulWidget {
   final Game game;
-  const GameEffectLayer(this.game, {Key? key}) : super(key: key);
+  final GameBoard gameBoard;
+  const GameEffectLayer(this.game, this.gameBoard, {Key? key}) : super(key: key);
 
   @override
   State<GameEffectLayer> createState() => _GameEffectLayerState();
@@ -269,11 +271,9 @@ class _GameEffectLayerState extends State<GameEffectLayer>
   with SingleTickerProviderStateMixin, GameListener {
   late AnimationController _controller;
 
-  Tween<double> innerRadiusTween = Tween(begin: .5, end: 0.01);
-  Tween<double> angleTween = Tween(begin: 0.0, end: pi);
   ColorTween colorTween = ColorTween(begin: Colors.green, end: Colors.red);
 
-  late List<Alignment> stars, blueStars;
+  GameTheme gameTheme = const DefaultTheme();
 
   @override
   void initState() {
@@ -281,13 +281,6 @@ class _GameEffectLayerState extends State<GameEffectLayer>
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
     _controller.addListener(() {setState(() {
     });});
-    stars = []; blueStars = [];
-    for (int k = 0; k < 20; k++) {
-      stars.add(Alignment(random.nextDouble()*2 - 1, random.nextDouble()*2 - 1));
-    }
-    for (int k = 0; k < 5; k++) {
-      blueStars.add(Alignment(random.nextDouble()*2 - 1, random.nextDouble()*2 - 1));
-    }
     widget.game.addGameListener(this);
   }
 
@@ -299,25 +292,15 @@ class _GameEffectLayerState extends State<GameEffectLayer>
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> children = [];
+    children.addAll(gameTheme.getEffects(widget.game.percentCorrect, widget.game));
+    children.add(widget.gameBoard);
+    if (widget.game.won) {
+      children.addAll(gameTheme.getWinEffects(_controller.value, widget.game));
+    }
     return Stack(
       fit: StackFit.expand,
-      children: [
-        Container(
-          color: Colors.orangeAccent,
-          width: double.infinity, height: double.infinity,
-        ),
-        BeamsEffect(
-          innerRadius: innerRadiusTween.evaluate(_controller),
-          progress: _controller.value,
-          color: colorTween.evaluate(_controller)!,
-        ),
-        BeamsEffect(
-          numberOfBeams: 11, progress: _controller.value,
-          innerRadius: 0, color: Colors.deepOrangeAccent.withOpacity(.5),
-        ),
-        StarsField(progress: _controller.value, starCount: 20,),
-        StarsField(progress: _controller.value, starCount: 10, starColor: Colors.indigo,),
-      ],
+      children: children,
     );
   }
 
@@ -332,6 +315,8 @@ class _GameEffectLayerState extends State<GameEffectLayer>
 
   @override
   void moveComplete(int score) {
+    setState(() {
+    });
   }
 
   @override
