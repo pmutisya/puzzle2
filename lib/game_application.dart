@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:puzzle2/game_board.dart';
 import 'package:puzzle2/game_ui/game_controller.dart';
 
-import '../domain.dart';
-import '../move_model.dart';
-import 'game_widgets.dart';
+import 'domain.dart';
+import 'move_model.dart';
+import 'game_ui/game_widgets.dart';
 
 class GameApplication extends StatefulWidget {
   const GameApplication({Key? key}) : super(key: key);
@@ -69,8 +69,9 @@ class _GameApplicationState extends State<GameApplication> with SingleTickerProv
 }
 
 class GameTheme {
-  List<GameEffectLayer> effects;
-  String tileType;
+  final List<GameEffectLayer> effects;
+  final List<GameEffectLayer>? aboveEffects;
+  final String tileType;
 
-  GameTheme(this.effects, this.tileType);
+  const GameTheme({required this.effects, required this.tileType, this.aboveEffects});
 }
