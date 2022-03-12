@@ -2,8 +2,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import 'effects_widgets.dart';
-
 Random random = Random();
 
 double outerClamp(double x) {
@@ -125,108 +123,4 @@ class BeamsPainter extends CustomPainter {
   bool shouldRepaint(covariant BeamsPainter oldDelegate) {
     return true;
   }
-
-}
-
-class BeamTester extends StatefulWidget {
-  const BeamTester({Key? key}) : super(key: key);
-
-  @override
-  State<BeamTester> createState() => _BeamTesterState();
-}
-
-class _BeamTesterState extends State<BeamTester> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  Tween<double> innerRadiusTween = Tween(begin: .5, end: 0.01);
-  Tween<double> angleTween = Tween(begin: 0.0, end: pi);
-  ColorTween colorTween = ColorTween(begin: Colors.green, end: Colors.red);
-
-  // late List<Alignment> stars, blueStars;
-  // late List<double> angles, blueAngles;
-  late List<Alignment> alignments, blueAlignments;
-
-  late GlobalKey<StarsFieldState> starKey;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
-    _controller.addListener(() {setState(() {
-    });});
-
-    alignments = List.generate(20, (index) => Alignment(outerClamp(random.nextDouble()*2 - 1),
-        outerClamp(random.nextDouble()*2 - 1)));
-    blueAlignments = List.generate(5, (index) => Alignment(outerClamp(random.nextDouble()*2 - 1),
-        outerClamp(random.nextDouble()*2 - 1)));
-
-    starKey = GlobalKey();
-
-    // stars = []; blueStars = [];
-    // for (int k = 0; k < 20; k++) {
-    //   stars.add(Alignment(random.nextDouble()*2 - 1, random.nextDouble()*2 - 1));
-    // }
-    // for (int k = 0; k < 5; k++) {
-    //   blueStars.add(Alignment(random.nextDouble()*2 - 1, random.nextDouble()*2 - 1));
-    // }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          Container(
-            color: Colors.orangeAccent,
-            width: double.infinity, height: double.infinity,
-          ),
-          // CustomPaint(
-          //   painter: BeamsPainter(
-          //     innerRadius: innerRadiusTween.evaluate(_controller),
-          //     angle: angleTween.evaluate(_controller),
-          //     color: colorTween.evaluate(_controller)!,
-          //   ),
-          // ),
-          // CustomPaint(
-          //   painter: BeamsPainter(
-          //     beams: 11,
-          //     angle: angleTween.evaluate(_controller),
-          //     innerRadius: 0, color: Colors.deepOrangeAccent.withOpacity(.5),
-          //   ),
-          // ),
-          // CustomPaint(
-          //   painter: StarsPainter(1, radius: _controller.value),
-          // ),
-          // CustomPaint(
-          //   painter: StarsPainter(5, color: Colors.indigo, radius: _controller.value),
-          // )
-          BeamsEffect(progress: _controller.value, reverse: true, color: Colors.blue,
-            numberOfBeams: 3, startingAngle: 0,),
-          BeamsEffect(progress: _controller.value, numberOfBeams: 11,
-            innerRadius: _controller.value/1000,
-            color: Colors.deepOrangeAccent.withOpacity(.5),),
-          BeamsEffect(progress: 2*_controller.value, reverse: true, numberOfBeams: 5,),
-          StarsField(progress: _controller.value, starCount: 10, starColor: Colors.white,),
-          StarsField(progress: _controller.value,starCount: 5, key: starKey, starColor: Colors.indigo,)
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(child: const Icon(Icons.play_arrow),
-        onPressed: () {
-          _controller.forward(from: 0);},),
-    );
-  }
-}
-
-void main() {
-  runApp(const MaterialApp(
-    title: 'Effects Tester',
-    home: BeamTester(),
-  ));
 }
