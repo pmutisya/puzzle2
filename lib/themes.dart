@@ -2,8 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:puzzle2/game_ui/garden_widget.dart';
 
 import 'domain.dart';
-import 'screens/game_playing_screen.dart';
 import 'game_ui/effects_widgets.dart';
+
+abstract class GameTheme {
+  final String tileType;
+  final String name;
+
+  const GameTheme({required this.name, required this.tileType});
+
+  List<EffectsWidget> getEffects(double progress, Game game);
+  List<EffectsWidget> getAboveGameEffects(double progress, Game game);
+  List<EffectsWidget> getWinEffects(double progress, Game game);
+}
 
 class DefaultTheme extends GameTheme {
 

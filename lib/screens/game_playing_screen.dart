@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:puzzle2/game_board.dart';
-import 'package:puzzle2/game_ui/effects_widgets.dart';
 import 'package:puzzle2/game_ui/game_controller.dart';
 import 'package:puzzle2/themes.dart';
 
@@ -70,15 +69,4 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
       ]
     );
   }
-}
-
-abstract class GameTheme {
-  final String tileType;
-  final String name;
-
-  const GameTheme({required this.name, required this.tileType});
-
-  List<EffectsWidget> getEffects(double progress, Game game);
-  List<EffectsWidget> getAboveGameEffects(double progress, Game game);
-  List<EffectsWidget> getWinEffects(double progress, Game game);
 }
