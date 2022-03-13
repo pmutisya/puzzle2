@@ -12,6 +12,7 @@ class Tile {
 
   bool isAnimating = false;
   bool isVisible = true;
+  bool isTapped = false;
   bool isShaking = false;
   bool canMove = false;
 

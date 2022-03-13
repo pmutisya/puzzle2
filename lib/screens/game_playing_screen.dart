@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:puzzle2/game_board.dart';
 import 'package:puzzle2/game_ui/effects_widgets.dart';
 import 'package:puzzle2/game_ui/game_controller.dart';
+import 'package:puzzle2/themes.dart';
 
-import 'domain.dart';
-import 'move_model.dart';
-import 'game_ui/game_widgets.dart';
+import '../domain.dart';
+import '../move_model.dart';
+import '../game_ui/game_widgets.dart';
 
 class GamePlayingScreen extends StatefulWidget {
   const GamePlayingScreen({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
 
   late MoveModel gameMovesModel;
   late Game game;
+  late GameTheme theme;
 
   GlobalKey<GameBoardState> gameBoardKey = GlobalKey();
 
@@ -30,6 +32,7 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
     super.initState();
     _controller = AnimationController(vsync: this);
     game = Game(16);
+    theme = const ModernTheme();
     gameMovesModel = game.movesModel;
   }
 
@@ -42,14 +45,14 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
   @override
   Widget build(BuildContext context) {
     GameBoard gameBoard = GameBoard(game, showingOverlay: true, key: gameBoardKey,
-      mode: 'rounded', assetImage: 'assets/images/image_bg.jpg',
+      mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',
     );
     GameController gameController = GameController(game, gameBoardKey);
     return Stack(
       fit: StackFit.expand,
       children: [
         // SvgPicture.asset('assets/svg/comic_bg.svg', fit: BoxFit.cover),
-        GameEffectLayer(game, gameBoard),
+        GameWidget(game: game, gameBoard: gameBoard, theme: theme,),
         // Padding(padding: const EdgeInsets.all(20),
         //   child: gameBoard),
         Positioned(

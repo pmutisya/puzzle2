@@ -38,7 +38,7 @@ class _ColoredPanelState extends State<ColoredPanelEffect> {
 class StarsField extends EffectsWidget {
   final int starCount;
   final Color starColor;
-  const StarsField({required progress,
+  const StarsField({required double progress,
     this.starColor = Colors.white, this.starCount = 5, Key? key}) : super(progress: progress, key: key);
 
   @override

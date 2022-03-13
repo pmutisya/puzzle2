@@ -31,11 +31,14 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin, Gam
   late CurvedAnimation _moveTileAnimation;
   late AnimationController _shakeController;
   late AnimationController _winController;
+  late AnimationController _tapController;
+  static final Tween<double> tapTween = Tween(begin: 1.1, end: 1.0);
 
   static const Duration defaultDuration = Duration(milliseconds: 250);
 
   List<Tile> animatingTiles = [];
 
+  Tile? tappedTile;
   Tile? activeTile;
 
   ui.Image? _image;
@@ -72,6 +75,15 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin, Gam
       }
     });
 
+    _tapController = AnimationController(vsync: this, duration: const Duration(milliseconds: 125));
+    _tapController.addListener(() {setState(() {
+    });});
+    _tapController.addStatusListener((status) {
+      if (status == AnimationStatus.completed && tappedTile != null) {
+        tappedTile!.isTapped = false;
+      }
+    });
+
     _winController = AnimationController(vsync: this, duration: const Duration(milliseconds: 750));
     _winController.addListener(() { setState((){});});
 
@@ -96,8 +108,11 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin, Gam
     Move? move = game.getMoveFromTap(tile);
     if (move != null) {
      // activeTile = null;
+      tappedTile = tile;
+      tile.isTapped = true;
       game.doMove(move);
       movesModel.addMove(move);
+      _tapController.forward(from: 0.0);
       animateExecutedMove();
    }
    else {
@@ -171,6 +186,12 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin, Gam
               child: tw,
             );
           }
+          else if (tile.isTapped) {
+            child = Transform.scale(
+              scale: tapTween.evaluate(_tapController),
+              child: tw,
+            );
+          }
           else {
             child = tw;
           }
@@ -213,7 +234,8 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin, Gam
       widget.mode == 'candy'? CandyTile(tile: tile, game: game, size: size) :
       widget.mode == 'plastic'? PlasticTile(tile: tile, game: game, size: size):
       widget.mode == 'gradient'? GradientTile(startColor: Colors.red, endColor: Colors.blue, tile: tile, size: size, game: game):
-      widget.mode =='gradient stop'? GradientStopTile(startColor: Colors.red, endColor: Colors.green, tile: tile, size: size, game: game) :
+      widget.mode =='gradient stop'? GradientStopTile(startColor: Colors.redAccent, endColor:
+      Colors.blueAccent, tile: tile, size: size, game: game) :
       SimpleTile(tile: tile, game: game, size: size),
     );
   }

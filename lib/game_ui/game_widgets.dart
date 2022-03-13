@@ -3,7 +3,7 @@ import 'package:puzzle2/game_board.dart';
 import 'package:puzzle2/themes.dart';
 
 import '../domain.dart';
-import '../game_application.dart';
+import '../screens/game_playing_screen.dart';
 import '../game_board.dart';
 import '../game_ui/game_controller.dart';
 
@@ -258,27 +258,25 @@ class _GameStartButtonState extends State<GameStartButton>
   }
 }
 
-class GameEffectLayer extends StatefulWidget {
+class GameWidget extends StatefulWidget {
   final Game game;
   final GameBoard gameBoard;
-  const GameEffectLayer(this.game, this.gameBoard, {Key? key}) : super(key: key);
+  final GameTheme theme;
+  const GameWidget({required this.game, required this.gameBoard,
+    required this.theme, Key? key}) : super(key: key);
 
   @override
-  State<GameEffectLayer> createState() => _GameEffectLayerState();
+  State<GameWidget> createState() => _GameWidgetState();
 }
 
-class _GameEffectLayerState extends State<GameEffectLayer>
+class _GameWidgetState extends State<GameWidget>
   with SingleTickerProviderStateMixin, GameListener {
   late AnimationController _controller;
-
-  ColorTween colorTween = ColorTween(begin: Colors.green, end: Colors.red);
-
-  GameTheme gameTheme = const DefaultTheme();
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 1500));
     _controller.addListener(() {setState(() {
     });});
     widget.game.addGameListener(this);
@@ -293,10 +291,10 @@ class _GameEffectLayerState extends State<GameEffectLayer>
   @override
   Widget build(BuildContext context) {
     List<Widget> children = [];
-    children.addAll(gameTheme.getEffects(widget.game.percentCorrect, widget.game));
+    children.addAll(widget.theme.getEffects(widget.game.percentCorrect, widget.game));
     children.add(widget.gameBoard);
     if (widget.game.won) {
-      children.addAll(gameTheme.getWinEffects(_controller.value, widget.game));
+      children.addAll(widget.theme.getWinEffects(_controller.value, widget.game));
     }
     return Stack(
       fit: StackFit.expand,

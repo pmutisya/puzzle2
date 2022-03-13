@@ -61,18 +61,4 @@ class GameController extends GameListener {
     game.reset();
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return KeyboardWidget(
-  //     bindings: [
-  //       KeyAction(LogicalKeyboardKey.keyS, 'Shuffle the board', shuffle),
-  //       KeyAction(LogicalKeyboardKey.keyR, 'Reset the game', resetGame),
-  //       KeyAction(LogicalKeyboardKey.keyV, 'Reverse solve', reverseSolve),
-  //       KeyAction(LogicalKeyboardKey.keyS, 'Shuffle (no animation)', shuffleImmediately, isShiftPressed: true),
-  //     ],
-  //     child: GameBoard(game, showingOverlay: true,
-  //       mode: 'rounded', key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
-  //     ),
-  //   );
-  // }
 }

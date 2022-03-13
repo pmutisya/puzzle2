@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:keymap/keymap.dart';
-import 'package:puzzle2/game_application.dart';
+import 'package:puzzle2/screens/game_playing_screen.dart';
 
 void main() {
   runApp(const MyApp());

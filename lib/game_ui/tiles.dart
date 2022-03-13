@@ -148,8 +148,11 @@ class GradientStopTile extends TileWidget{
         borderRadius: const BorderRadius.all(Radius.circular(2)),
         color: tile.isVisible? color : Colors.transparent,
       ),
-      child: tile.isVisible? Text('${tile.value}', style: TextStyle(color: Colors.black,
-        fontFamily: 'Poppins', fontSize: calcTextSize(size)),) :
+      child: tile.isVisible? Text('${tile.value}', style: TextStyle(color: Colors.white70,
+        shadows: const [
+          Shadow(color: Colors.black54, offset: Offset(1, 1)),
+        ],
+        fontFamily: 'Poppins', fontSize: calcTextSize(size - 8), fontWeight: FontWeight.w100),) :
       Container(),
     );
   }

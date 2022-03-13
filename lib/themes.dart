@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:puzzle2/game_ui/garden_widget.dart';
 
 import 'domain.dart';
-import 'game_application.dart';
+import 'screens/game_playing_screen.dart';
 import 'game_ui/effects_widgets.dart';
 
 class DefaultTheme extends GameTheme {
 
   const DefaultTheme():
     super(name: 'Default', tileType: 'rounded');
-
-  @override
-  List<EffectsWidget> getAboveGameEffects(double progress, Game game) {
-    return [];
-  }
 
   @override
   List<EffectsWidget> getEffects(double progress, Game game) {
@@ -33,14 +29,40 @@ class DefaultTheme extends GameTheme {
   }
 
   @override
+  List<EffectsWidget> getAboveGameEffects(double progress, Game game) {
+    return [];
+  }
+
+  @override
   List<EffectsWidget> getWinEffects(double progress, Game game) {
     return [
       StarsField(progress: progress, starCount: 20,),
       StarsField(progress: progress, starCount: 11, starColor: Colors.indigo,),
     ];
   }
-}
 
+}
+class ImageTheme extends GameTheme {
+  const ImageTheme(): super(name: 'Image', tileType: 'image');
+
+  @override
+  List<EffectsWidget> getAboveGameEffects(double progress, Game game) => [];
+
+  @override
+  List<EffectsWidget> getEffects(double progress, Game game) {
+    return [
+      ColoredPanelEffect(progress: progress, startColor: Colors.indigo, endColor: Colors.green)
+    ];
+  }
+
+  @override
+  List<EffectsWidget> getWinEffects(double progress, Game game) {
+    return [
+      StarsField(progress: progress, starCount: 40,)
+    ];
+  }
+
+}
 class IvoryTheme extends GameTheme {
   const IvoryTheme(): super(name: 'Ivory', tileType: 'ivory');
 
@@ -60,5 +82,25 @@ class IvoryTheme extends GameTheme {
       StarsField(progress: progress, starCount: 40,)
     ];
   }
+}
 
+class ModernTheme extends GameTheme {
+  const ModernTheme() : super(name: 'Modern', tileType: 'gradient');
+
+  @override
+  List<EffectsWidget> getAboveGameEffects(double progress, Game game) => [];
+
+  @override
+  List<EffectsWidget> getEffects(double progress, Game game) {
+    return [
+      GardenContainer(8, progress: progress)
+    ];
+  }
+
+  @override
+  List<EffectsWidget> getWinEffects(double progress, Game game) {
+    return [
+      StarsField(progress: progress, starCount: 40,)
+    ];
+  }
 }
