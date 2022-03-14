@@ -44,12 +44,12 @@ class GameController extends GameListener {
   }
 
   void shuffle({bool animate = true}) {
-    animatingMoves = movesModel.shuffle(20, animate: animate);
+    animatingMoves = movesModel.shuffle(40, animate: animate);
     doNextMove();
   }
 
   void shuffleImmediately() {
-    movesModel.shuffleImmediately(20,);
+    movesModel.shuffleImmediately(40,);
   }
 
   void reverseSolve() {

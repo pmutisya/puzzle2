@@ -4,7 +4,7 @@ const Color darkBG = Color(0xFF23212B);
 const Color bg = Color(0xFF313241);
 const Color highlight = Color(0xFFA15DF0);
 const Color text = Color(0xFFECEDF7);
-const Color disabledText = Color(0xFF6D6E87);
+const Color disabledText = Color(0xFF7E7EAA);
 
 const LinearGradient gradient = LinearGradient(colors: [Color(0xFF846BF2), Color(0xFF6E84F8)]);
 
@@ -12,7 +12,7 @@ ThemeData defaultTheme = ThemeData(
   brightness: Brightness.dark,
   fontFamily: 'Poppins',
   colorScheme: const ColorScheme(
-    primary: highlight,
+    primary: disabledText,
     background: darkBG,
     surface: bg,
     secondary: bg,

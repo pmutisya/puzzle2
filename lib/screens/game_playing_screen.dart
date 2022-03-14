@@ -26,10 +26,10 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
   late Game game;
   late GameTheme theme;
 
-  GlobalKey<GameBoardState> gameBoardKey = GlobalKey();
+  late GameBoard gameBoard;
+  late GameController gameController;
 
-  int gamesPlayed = 0;
-  int gamesWon = 0;
+  GlobalKey<GameBoardState> gameBoardKey = GlobalKey();
 
   @override
   void initState() {
@@ -41,6 +41,13 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
     theme = widget.theme;
     print('THEME: $theme');
     gameMovesModel = game.movesModel;
+    gameBoard = GameBoard(game, key: gameBoardKey,
+      mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',
+    );
+    gameController = GameController(game, gameBoardKey);
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      gameController.shuffle();
+    });
   }
 
   @override
@@ -60,10 +67,6 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
   
   @override
   Widget build(BuildContext context) {
-    GameBoard gameBoard = GameBoard(game, key: gameBoardKey,
-      mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',
-    );
-    GameController gameController = GameController(game, gameBoardKey);
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -81,7 +84,7 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
         ),
         Positioned(
           left: 10, bottom: 10,
-          child: ScoreWidget(game),
+          child: GameClock(game),
         ),
         Positioned(left: 10, top: 10,
           child: BackButton(

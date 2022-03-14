@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:puzzle2/game_board.dart';
 import 'package:puzzle2/themes.dart';
 
+import 'dart:async';
+
 import '../domain.dart';
 import '../game_board.dart';
 import '../game_ui/game_controller.dart';
+import '../main.dart';
+import '../style.dart';
 
 BoxDecoration getBoxDecoration() {
   return BoxDecoration(
@@ -16,77 +20,43 @@ BoxDecoration getBoxDecoration() {
   );
 }
 
-class ScoreWidget extends StatefulWidget {
+class GameClock extends StatefulWidget {
   final Game game;
-  const ScoreWidget(this.game, {Key? key}) : super(key: key);
+  const GameClock(this.game, {Key? key}) : super(key: key);
 
   @override
-  State<ScoreWidget> createState() => _ScoreWidgetState();
+  State<GameClock> createState() => _GameClockState();
 }
 
-class _ScoreWidgetState extends State<ScoreWidget> with SingleTickerProviderStateMixin,
-  GameListener {
-  late AnimationController _controller;
-  double score = 0;
-  double oldScore = 0;
-  double displayedScore = 0;
-  double delta = 0;
+class _GameClockState extends State<GameClock> {
+  late Timer timer;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
-    _controller.addListener(() {
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
-        displayedScore = oldScore + delta * _controller.value;
       });
     });
-    widget.game.addGameListener(this);
-    oldScore = widget.game.score/100;
-    score = widget.game.score/100;
-    delta = 0;
-    displayedScore = score;
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 60, height: 60,
-      child: CircularProgressIndicator(
-        value: displayedScore, strokeWidth: 8,
-      ),
+    Duration duration = DateTime.now().difference(widget.game.startTime);
+    return Card(
+      color: bg.withOpacity(.5),
+      elevation: 10,
+      child: Container(
+        alignment: Alignment.center,
+        padding: const EdgeInsets.all(16),
+        child: Text(printDuration(duration)))
     );
-  }
-
-  @override
-  void gameRestarted() {
-    oldScore = widget.game.score/100;
-    score = widget.game.score/100;
-    delta = 0;
-  }
-
-  @override
-  void gameWon() {
-  }
-
-  @override
-  void moveComplete(int newScore) {
-    setState(() {
-      oldScore = score;
-      score = newScore/100;
-      delta = score - oldScore;
-      _controller.forward(from: 0);
-    });
-  }
-
-  @override
-  void moveStarted() {
   }
 }
 

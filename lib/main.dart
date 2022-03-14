@@ -88,3 +88,73 @@ class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
     );
   }
 }
+
+class GameTime implements GameListener{
+  final Game game;
+  DateTime? start, end;
+
+  GameTime(this.game):
+    start = DateTime.now() {
+    game.addGameListener(this);
+  }
+  @override
+  void gameRestarted() {
+    start = DateTime.now();
+  }
+  @override
+  void gameWon() {
+    end = DateTime.now();
+    Scores.instance._submitTime(game.rows, end!.difference(start!));
+  }
+  @override
+  void moveComplete(int score) {}
+  @override
+  void moveStarted() {}
+}
+
+class GameTimes {
+  static GameTimes get instance => _instance;
+
+  static final GameTimes _instance = GameTimes._internal();
+
+  GameTimes._internal();
+
+  Map<int, GameTime> times = {};
+
+  void startGame(Game game) {
+    GameTime? gameTime = GameTime(game);
+    times[game.rows] = gameTime;
+  }
+}
+
+class Scores {
+  static Scores get instance => _instance;
+
+  static final Scores _instance = Scores._internal();
+
+  Scores._internal();
+
+  Map<int, Duration> scores = {};
+
+  _submitTime(int size, Duration duration) {
+    Duration? d = scores[size];
+    if (d == null || d > duration) {
+      scores[size] = duration;
+    }
+  }
+  operator [](int size) {
+    Duration? d = scores[size];
+    if (d == null) {
+      return 'no times';
+    }
+    else {
+      printDuration(d);
+    }
+  }
+}
+String printDuration(Duration duration) {
+  String twoDigits(int n) => n.toString().padLeft(2, "0");
+  String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+  String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+  return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
+}

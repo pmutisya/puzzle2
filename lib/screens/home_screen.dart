@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:line_icons/line_icons.dart';
 import 'package:puzzle2/game_autoplay.dart';
-import 'package:puzzle2/home_screen/theme_selector.dart';
 import 'package:puzzle2/move_model.dart';
 import 'package:puzzle2/style.dart';
 import 'package:puzzle2/themes.dart';
@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 5000));
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 10000));
     game = Game(16, interactive: false,);
     movesModel = game.movesModel;
     gameBoardKey = GlobalKey();
@@ -107,28 +107,44 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      StartButton(3, theme, sizeSelected, selected: gameSize  == 9,),
-                      StartButton(4, theme, sizeSelected, selected: gameSize  == 16,),
-                      StartButton(5, theme, sizeSelected, selected: gameSize  == 25,),
+                      StartButton(3, theme, sizeSelected, selected: false,),
+                      StartButton(4, theme, sizeSelected, selected: false,),
+                      StartButton(5, theme, sizeSelected, selected: false,),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(left: 10, top: 10,
+                child: HoverButton(
+                  onTap: () {
+                    RenderBox overlay = Overlay.of(context)!.context.findRenderObject()! as RenderBox;
+                    showMenu(context: context, position:
+                      RelativeRect.fromSize(const Offset(80, 10) & const Size(80, 80), overlay.size),
+                      items: [
+                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown),
+                          label: Text('3x3 ${Scores.instance[3]}'), onPressed: (){},),),
+                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown),
+                          label: Text('4x4 ${Scores.instance[4]}'), onPressed: (){},),),
+                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown),
+                          label: Text('5x5 ${Scores.instance[5]}'), onPressed: (){},),),
+                      ]);
+                  },
+                  child: Row(
+                    children: const [
+                      Icon(LineIcons.award),
+                      // Text('High Scores')
                     ],
                   ),
                 ),
               ),
             ],
           ),
-          floatingActionButton: ThemeSelector([themeSelected])
-            // Positioned(
-            //   left: 0, bottom: 100,
-            //   child: Container(
-            //     alignment: Alignment.center,
-            //     color: Colors.blue,
-            //     child: ThemeSelector(themeSelected)),
-            // ),
-            ,
+          // floatingActionButton: ThemeSelector([themeSelected])
         );
       }
     );
   }
+
 }
 
 class StartButton extends StatefulWidget {
@@ -205,32 +221,63 @@ class _StartButtonState extends State<StartButton> with SingleTickerProviderStat
   }
 }
 
-class OctaClipper extends CustomClipper<Path> {
+class HoverButton extends StatefulWidget {
+  final Widget child;
+  final VoidCallback onTap;
+
+  const HoverButton({required this.child, required this.onTap, Key? key}) : super(key: key);
+
   @override
-  Path getClip(Size size) {
-    double w = size.width, h = size.height;
-    double s = min(w, h);
-    Path path = Path();
-    path.addPolygon([
-      Offset(0, s/3), //1
-      Offset(s/3, 0), //2
-      Offset(w - s/3, 0), //3
-      Offset(w, s/3), //4
-      Offset(w, h - s/3), //5
-      Offset(w - s/3, h), //6
-      Offset(s/3, h), //7
-      Offset(0, h - s/3),
-      // Offset(0, size.height/2),
-      // Offset(size.width * 1 / 3, size.height),
-      // Offset(size.width * 2 / 3, size.height),
-      // Offset(size.width, size.height / 2),
-      // Offset(size.width * 2 / 3, 0),
-      // Offset(size.width * 1 / 3, 0)
-    ], true);
-    return path;
+  State<HoverButton> createState() => _HoverButtonState();
+}
+
+class _HoverButtonState extends State<HoverButton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  bool hovering = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this);
   }
+
   @override
-  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        child: InkWell(
+          onTap: (){
+            widget.onTap();
+          },
+          onHover: (v) {
+            setState(() {
+              hovering = v;
+            });
+          },
+          child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: hovering ? gradient : null,
+                color: hovering? null : bg,
+                boxShadow: [BoxShadow(
+                  color: hovering? Colors.lightBlueAccent : Colors.black12,
+                  blurRadius: 6, spreadRadius: 2,
+                )],
+                border: Border.all(width: 2,
+                    color: hovering? Colors.lightBlueAccent : Colors.transparent),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 18),
+              child: widget.child,
+          ),
+        )
+    );
+  }
 }
 
 void main() {

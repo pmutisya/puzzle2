@@ -59,6 +59,7 @@ abstract class GameListener {
 }
 
 class Game {
+  DateTime startTime;
   final int length;
   final int columns;
 
@@ -77,6 +78,7 @@ class Game {
   ///with the tiles in order then shuffling them
   ///visibly
   Game(this.length, {this.interactive = true}) :
+      startTime = DateTime.now(),
       _gameListeners = [],
       _tiles = List<Tile>.generate(length - 1, (index) => Tile(index+1, index)),
     columns = sqrt(length).toInt()
@@ -95,6 +97,7 @@ class Game {
   int get rows => length ~/ columns;
 
   void reset() {
+    startTime = DateTime.now();
     int l = length;
     movesModel.reset();
     // _tiles.clear();
