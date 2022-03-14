@@ -4,13 +4,16 @@ import 'package:puzzle2/game_ui/game_controller.dart';
 import 'package:puzzle2/themes.dart';
 
 import '../domain.dart';
+import '../main.dart';
 import '../move_model.dart';
 import '../game_ui/game_widgets.dart';
 
 class GamePlayingScreen extends StatefulWidget {
   final GameTheme theme;
   final int gameSize;
-  const GamePlayingScreen(this.theme, this.gameSize, {Key? key}) : super(key: key);
+  final ResultsListener listener;
+
+  const GamePlayingScreen(this.theme, this.gameSize, this.listener, {Key? key}) : super(key: key);
 
   @override
   _GamePlayingScreenState createState() => _GamePlayingScreenState();
@@ -33,10 +36,22 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
     super.initState();
     _controller = AnimationController(vsync: this);
     game = Game(widget.gameSize);
+    print('\nSIZE: ${widget.gameSize}');
+    print('created a game of size ${game.columns}x${game.rows}');
     theme = widget.theme;
+    print('THEME: $theme');
     gameMovesModel = game.movesModel;
   }
 
+  @override
+  void didUpdateWidget(GamePlayingScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    print('\n\nUPDATE!!!');
+    theme = widget.theme;
+    game = Game(widget.gameSize);
+    print('THEME: $theme');
+    print('SIZE: ${widget.gameSize}\n\n');
+  }
   @override
   void dispose() {
     _controller.dispose();
@@ -68,6 +83,12 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
           left: 10, bottom: 10,
           child: ScoreWidget(game),
         ),
+        Positioned(left: 10, top: 10,
+          child: BackButton(
+            onPressed: (){
+              widget.listener(game, const Duration(seconds: 10));
+          },
+        ))
       ]
     );
   }

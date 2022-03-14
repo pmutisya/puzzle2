@@ -40,7 +40,9 @@ class _AutoPlayerState extends State<AutoPlayer> with GameListener {
     game.reset();
 
     game.addGameListener(this);
-    _autoplay();
+    if (widget.autoplay) {
+      _autoplay();
+    }
   }
 
   @override

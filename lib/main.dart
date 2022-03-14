@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:keymap/keymap.dart';
 import 'package:puzzle2/screens/game_playing_screen.dart';
 import 'package:puzzle2/themes.dart';
 
+import 'domain.dart';
+import 'style.dart';
 import 'screens/home_screen.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -16,13 +18,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Game Tester',
-      theme: ThemeData(
-          fontFamily: 'Poppins'
-      ),
-      darkTheme: ThemeData(
-          brightness: Brightness.dark,
-          fontFamily: 'Poppins'
-      ),
+      theme: defaultTheme,
+      darkTheme: defaultTheme,
       home: const GameApp(),
     );
   }
@@ -35,10 +32,11 @@ class GameApp extends StatefulWidget {
 }
 
 typedef SetOptionsListener = Function(GameTheme theme, int size);
+typedef ResultsListener = Function(Game game, Duration time);
 
 class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
   late AnimationController _controller;
-  late GameTheme theme = const DefaultTheme();
+  late GameTheme theme = const ModernTheme();
   late int gameSize = 16;
 
   late TabController _tabController;
@@ -65,10 +63,17 @@ class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
     setState(() {
       theme = newTheme;
       gameSize = size;
+      print('starting game sized $gameSize');
+      print('WITH THEME: $theme');
       _tabController.animateTo(1);
     });
   }
 
+  void _showResults(Game game, Duration duration) {
+    setState(() {
+      _tabController.animateTo(0);
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -77,7 +82,7 @@ class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
           physics: const NeverScrollableScrollPhysics(),
           children: [
             HomeScreen(_startGame),
-            GamePlayingScreen(theme, gameSize)
+            GamePlayingScreen(theme, gameSize, _showResults)
           ],
         )
     );

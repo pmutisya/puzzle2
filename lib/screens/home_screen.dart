@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:puzzle2/game_autoplay.dart';
 import 'package:puzzle2/home_screen/theme_selector.dart';
 import 'package:puzzle2/move_model.dart';
+import 'package:puzzle2/style.dart';
 import 'package:puzzle2/themes.dart';
 
 import '../game_board.dart';
@@ -22,17 +23,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
   Tween<double> scaleTween = Tween(begin: 1.0, end: .95);
-  ColorTween colorTween = ColorTween(begin: Colors.indigo[900], end: Colors.deepPurple[900]);
   late Game game;
   late GlobalKey<GameBoardState> gameBoardKey;
   late MoveModel movesModel;
   GameTheme theme = const DefaultTheme();
+  int gameSize = 16;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 5000));
-    game = Game(16, interactive: false);
+    game = Game(16, interactive: false,);
     movesModel = game.movesModel;
     gameBoardKey = GlobalKey();
 
@@ -44,8 +45,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    _controller.reset();
     _controller.dispose();
     super.dispose();
+  }
+
+  void sizeSelected(GameTheme _, int size) {
+    setState(() {
+      gameSize = size;
+    });
+    widget.listener(theme, size);
   }
 
   void themeSelected(GameTheme newTheme) {
@@ -59,19 +68,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        double ss = min(constraints.maxWidth, constraints.maxHeight);
+
         return Scaffold(
           body: Stack(
             children: [
               Container(
                 width: double.infinity, height: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [Colors.black, colorTween.evaluate(_controller)!],
-                    begin: Alignment.topCenter, end: Alignment.bottomCenter
-                  )
+                decoration: const BoxDecoration(
+                  color: darkBG
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(40),
+                padding: EdgeInsets.all(ss/10),
                 child: Transform.scale(
                   scale: scaleTween.evaluate(_controller),
                   child: Transform.translate(
@@ -98,9 +107,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.max,
                     children: [
-                      StartButton(3, theme, widget.listener),
-                      StartButton(4, theme, widget.listener),
-                      StartButton(5, theme, widget.listener),
+                      StartButton(3, theme, sizeSelected, selected: gameSize  == 9,),
+                      StartButton(4, theme, sizeSelected, selected: gameSize  == 16,),
+                      StartButton(5, theme, sizeSelected, selected: gameSize  == 25,),
                     ],
                   ),
                 ),
@@ -126,8 +135,10 @@ class StartButton extends StatefulWidget {
   final int size;
   final GameTheme theme;
   final SetOptionsListener listener;
+  final bool selected;
 
-  const StartButton(this.size, this.theme, this.listener, {Key? key}) :
+  const StartButton(this.size, this.theme, this.listener,
+    {this.selected = false, Key? key}) :
     assert(size == 3 || size == 4 || size == 5, "Choose 3x3, 4x4 or 5x5"),
     super(key: key);
 
@@ -175,10 +186,8 @@ class _StartButtonState extends State<StartButton> with SingleTickerProviderStat
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: const LinearGradient(
-              begin: Alignment.centerLeft, end: Alignment.centerRight,
-              colors: [Colors.deepPurple, Colors.blue],
-            ),
+            gradient: (hovering || widget.selected) ? gradient : null,
+            color: hovering? null : bg,
             boxShadow: [BoxShadow(
               color: hovering? Colors.lightBlueAccent : Colors.black12,
               blurRadius: 6, spreadRadius: 2,
@@ -188,7 +197,7 @@ class _StartButtonState extends State<StartButton> with SingleTickerProviderStat
           ),
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 18),
           child: Text('$size x $size',
-            style: TextStyle(color: hovering? Colors.lightBlueAccent : Colors.white,
+            style: const TextStyle(color: text, //hovering || widget.selected ? text : disabledText,
                 fontWeight: FontWeight.bold),)
         ),
       )

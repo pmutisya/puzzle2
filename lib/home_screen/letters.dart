@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
+import 'package:puzzle2/style.dart';
+
 class Letters extends StatefulWidget {
   final List<Point<int>> locations;
 
@@ -15,7 +17,7 @@ class LettersState extends State<Letters> with TickerProviderStateMixin {
   late AnimationController _flippingController;
   late int columns;
   late int rows;
-  static const List<Color> colors = [Colors.white, Colors.lightBlueAccent, Colors.yellow];
+  static const List<Color> colors = [highlight, text, disabledText];
   int colorIndex = 0;
 
   @override
@@ -67,6 +69,7 @@ class LettersState extends State<Letters> with TickerProviderStateMixin {
   @override
   void dispose() {
     _controller.dispose();
+    _flippingController.reset();
     _flippingController.dispose();
     super.dispose();
   }
