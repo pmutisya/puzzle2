@@ -10,10 +10,13 @@ class Letters extends StatefulWidget {
   State<Letters> createState() => LettersState();
 }
 
-class LettersState extends State<Letters> with SingleTickerProviderStateMixin {
+class LettersState extends State<Letters> with TickerProviderStateMixin {
   late AnimationController _controller;
+  late AnimationController _flippingController;
   late int columns;
   late int rows;
+  static const List<Color> colors = [Colors.white, Colors.lightBlueAccent, Colors.yellow];
+  int colorIndex = 0;
 
   @override
   void initState() {
@@ -23,6 +26,26 @@ class LettersState extends State<Letters> with SingleTickerProviderStateMixin {
       setState(() {
       });
     });
+    _flippingController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
+    _flippingController.addListener(() { 
+      setState(() {
+      });
+    });
+    _flippingController.addStatusListener((status) { 
+      if (status == AnimationStatus.completed) {
+        _flipTiles();
+      }
+      else if (status == AnimationStatus.forward) {
+        setState(() {
+          colorIndex++;
+          if (colorIndex >= colors.length) {
+            colorIndex = 0;
+          }
+        });
+      }
+    });
+    _flippingController.repeat(reverse: true, period: const Duration(milliseconds: 5000),);
+    
     _controller.value = 1.0;
     columns = 0;
     rows = 0;
@@ -30,8 +53,17 @@ class LettersState extends State<Letters> with SingleTickerProviderStateMixin {
       columns = max(columns, loc.x);
       rows = max(rows, loc.y);
     }
+    _flippingController.forward(from: 0);
+    _controller.forward(from: 0);
   }
 
+  static Random random = Random();
+
+  Future<void> _flipTiles() async {
+    return Future.delayed(Duration(milliseconds: random.nextInt(10000)), () {
+      _flippingController.forward(from: 0.0);
+    });
+  }
   @override
   void dispose() {
     _controller.dispose();
@@ -47,15 +79,13 @@ class LettersState extends State<Letters> with SingleTickerProviderStateMixin {
     return LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
       double hw = min(constraints.maxWidth/(columns + 1), constraints.maxHeight/(rows+1));
       List<Widget> squares = [];
-      int k =0;
       double dx = constraints.maxWidth/2 - (columns*hw)/2;
       for (Point<int> p in widget.locations) {
-        Square square = Square(hw, p);
+        Square square = Square(hw, p, color: colors[colorIndex],rotationPercent: _flippingController.value,);
         squares.add(Positioned(
           child: square,
           left: dx + p.x*hw, top: p.y*hw + (1 - _controller.value)*constraints.maxHeight,
         ));
-        k++;
       }
       return Stack(
         children: squares,
@@ -69,17 +99,34 @@ class LettersState extends State<Letters> with SingleTickerProviderStateMixin {
 class Square extends StatelessWidget {
   final double size;
   final Point<int> location;
-  
-  const Square(this.size, this.location, {Key? key}) : super(key: key);
+  final double rotationPercent;
+
+  final Color color;
+
+  const Square(this.size, this.location, {this.color = Colors.white, this.rotationPercent = 0, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: size, width: size,
+    Widget child =  Container(
+      margin: const EdgeInsets.all(2),
+      height: size - 2, width: size - 2,
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.orangeAccent, width: 1,)
+        color: color,
+        // border: Border.all(color: Colors.white, width: 1,)
       ),
+    );
+    if (rotationPercent == 0) {
+      return child;
+    }
+    // if (rotationPercent < .5) {
+    //   child = Container(height: size, width: size, color: Colors.blueGrey,);
+    // }
+    return Transform(
+      alignment: FractionalOffset.center,
+      transform: Matrix4.identity()..
+        setEntry(3, 2, 0.0015)..
+        rotateX(pi*(rotationPercent)),
+      child: child,
     );
   }
 }

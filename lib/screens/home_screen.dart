@@ -1,11 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:puzzle2/home_screen/theme_selector.dart';
 import 'package:puzzle2/move_model.dart';
+import 'package:puzzle2/themes.dart';
 
 import '../game_board.dart';
 import '../domain.dart';
-import 'letters.dart';
+import '../home_screen/letters.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -17,16 +19,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
   Tween<double> scaleTween = Tween(begin: 1.0, end: .95);
-  ColorTween colorTween = ColorTween(begin: Colors.blue, end: Colors.purple);
+  ColorTween colorTween = ColorTween(begin: Colors.indigo[900], end: Colors.deepPurple[900]);
   late Game game;
   late GlobalKey<GameBoardState> gameBoardKey;
   late MoveModel movesModel;
+  GameTheme theme = const DefaultTheme();
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 5000));
-    game = Game(16);
+    game = Game(16, interactive: false);
     movesModel = game.movesModel;
     gameBoardKey = GlobalKey();
 
@@ -42,54 +45,70 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
+  void themeSelected(GameTheme newTheme) {
+    setState(() {
+      theme = newTheme;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Stack(
-          children: [
-            Container(
-              width: double.infinity, height: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: [Colors.black, colorTween.evaluate(_controller)!],
-                  begin: Alignment.topCenter, end: Alignment.bottomCenter
-                )
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(40),
-              child: Transform.scale(
-                scale: scaleTween.evaluate(_controller),
-                child: Transform.translate(
-                  offset: Offset(0.0, sin(_controller.value*2*pi)*20),
-                  child: GameBoard(game, mode: 'gradient stop',))),
-            ),
-            Positioned(
-              left: 0, top: 20,
-              child: Container(
-                padding: const EdgeInsets.all(10.0),
-                height: constraints.maxHeight/5, width: constraints.maxWidth - 40,
-                child: Letters(buildWord(tiles))),
-            ),
-            Positioned(
-              left: 0, bottom: 20,
-              child: Container(
-                color: Colors.black12,
-                width: constraints.maxWidth,
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  mainAxisSize: MainAxisSize.max,
-                  children: const [
-                    StartButton(3),
-                    StartButton(4),
-                    StartButton(5),
-                  ],
+        return Scaffold(
+          body: Stack(
+            children: [
+              Container(
+                width: double.infinity, height: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [Colors.black, colorTween.evaluate(_controller)!],
+                    begin: Alignment.topCenter, end: Alignment.bottomCenter
+                  )
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.all(40),
+                child: Transform.scale(
+                  scale: scaleTween.evaluate(_controller),
+                  child: Transform.translate(
+                    offset: Offset(0.0, sin(_controller.value*2*pi)*20),
+                    child: GameBoard(game, mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',))),
+              ),
+              Positioned(
+                left: 0, top: 20,
+                child: Container(
+                  padding: const EdgeInsets.all(10.0),
+                  height: constraints.maxHeight/5, width: constraints.maxWidth - 40,
+                  child: Letters(buildWord(tiles))),
+              ),
+              Positioned(
+                left: 0, bottom: 0,
+                child: Container(
+                  width: constraints.maxWidth,
+                  height: 100,
+                  alignment: Alignment.center,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.max,
+                    children: const [
+                      StartButton(3),
+                      StartButton(4),
+                      StartButton(5),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          floatingActionButton: ThemeSelector(themeSelected)
+            // Positioned(
+            //   left: 0, bottom: 100,
+            //   child: Container(
+            //     alignment: Alignment.center,
+            //     color: Colors.blue,
+            //     child: ThemeSelector(themeSelected)),
+            // ),
+            ,
         );
       }
     );
@@ -109,12 +128,18 @@ class StartButton extends StatefulWidget {
 class _StartButtonState extends State<StartButton> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late int size;
+  bool hovering = false;
 
   @override
   void initState() {
     super.initState();
     size = widget.size;
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 2500));
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 5500));
+    _controller.addListener(() {
+      setState(() {
+      });
+    });
+    _controller.repeat(reverse: true);
   }
 
   @override
@@ -125,32 +150,61 @@ class _StartButtonState extends State<StartButton> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Colors.black38
-      ),
-      padding: const EdgeInsets.all(20),
-      child: ClipPath(
-        clipper: HexClipper(),
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 450),
+      // margin: const EdgeInsets.all(10),
+      child: InkWell(
+        onTap: (){},
+        onHover: (v) {
+          setState(() {
+              hovering = v;
+          });
+        },
         child: Container(
-          color: Colors.black38,
-          padding: const EdgeInsets.all(20),
-          child: Text('$size x $size', style: const TextStyle(color: Colors.white),))),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: const LinearGradient(
+              begin: Alignment.centerLeft, end: Alignment.centerRight,
+              colors: [Colors.deepPurple, Colors.blue],
+            ),
+            boxShadow: [BoxShadow(
+              color: hovering? Colors.lightBlueAccent : Colors.black12,
+              blurRadius: 6, spreadRadius: 2,
+            )],
+            border: Border.all(width: 2,
+              color: hovering? Colors.lightBlueAccent : Colors.transparent),
+          ),
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 18),
+          child: Text('$size x $size',
+            style: TextStyle(color: hovering? Colors.lightBlueAccent : Colors.white,
+                fontWeight: FontWeight.bold),)
+        ),
+      )
     );
   }
 }
 
-class HexClipper extends CustomClipper<Path> {
+class OctaClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {
+    double w = size.width, h = size.height;
+    double s = min(w, h);
     Path path = Path();
     path.addPolygon([
-      Offset(0, size.height/2),
-      Offset(size.width * 1 / 3, size.height),
-      Offset(size.width * 2 / 3, size.height),
-      Offset(size.width, size.height / 2),
-      Offset(size.width * 2 / 3, 0),
-      Offset(size.width * 1 / 3, 0)
+      Offset(0, s/3), //1
+      Offset(s/3, 0), //2
+      Offset(w - s/3, 0), //3
+      Offset(w, s/3), //4
+      Offset(w, h - s/3), //5
+      Offset(w - s/3, h), //6
+      Offset(s/3, h), //7
+      Offset(0, h - s/3),
+      // Offset(0, size.height/2),
+      // Offset(size.width * 1 / 3, size.height),
+      // Offset(size.width * 2 / 3, size.height),
+      // Offset(size.width, size.height / 2),
+      // Offset(size.width * 2 / 3, 0),
+      // Offset(size.width * 1 / 3, 0)
     ], true);
     return path;
   }

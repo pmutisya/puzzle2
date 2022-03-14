@@ -70,11 +70,13 @@ class Game {
   late MoveModel movesModel;
   final List<GameListener> _gameListeners;
 
+  bool interactive;
+
   ///Creates a game with tiles already in
   ///order. This is useful for starting a game
   ///with the tiles in order then shuffling them
   ///visibly
-  Game(this.length) :
+  Game(this.length, {this.interactive = true}) :
       _gameListeners = [],
       _tiles = List<Tile>.generate(length - 1, (index) => Tile(index+1, index)),
     columns = sqrt(length).toInt()

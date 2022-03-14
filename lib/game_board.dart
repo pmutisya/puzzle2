@@ -226,9 +226,7 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin, Gam
   }
 
   Widget _getTile(Tile tile, double size) {
-    return GestureDetector(
-      onTap: () => _tapped(tile),
-      child: widget.mode == 'rounded'? TileWidget(tile: tile, game: game, size: size,) :
+    Widget tileWidget = widget.mode == 'rounded'? TileWidget(tile: tile, game: game, size: size,) :
       widget.mode == 'ivory'? IvoryTile(tile: tile, game: game, size: size) :
       widget.mode == 'image' && _image != null? ImageTile(_image!, tile: tile, game: game, size: size):
       widget.mode == 'candy'? CandyTile(tile: tile, game: game, size: size) :
@@ -236,8 +234,12 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin, Gam
       widget.mode == 'gradient'? GradientTile(startColor: Colors.red, endColor: Colors.blue, tile: tile, size: size, game: game):
       widget.mode =='gradient stop'? GradientStopTile(startColor: Colors.redAccent, endColor:
       Colors.blueAccent, tile: tile, size: size, game: game) :
-      SimpleTile(tile: tile, game: game, size: size),
-    );
+      SimpleTile(tile: tile, game: game, size: size);
+
+    return game.interactive? GestureDetector(
+      onTap: () => _tapped(tile),
+      child: tileWidget,
+    ): tileWidget;
   }
 
   @override

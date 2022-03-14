@@ -112,8 +112,11 @@ class GradientTile extends TileWidget{
         // borderRadius: const BorderRadius.all(Radius.circular(2)),
         gradient: tile.isVisible? gradient : null,
       ),
-      child: tile.isVisible? Text('${tile.value}',
-        style: TextStyle(color: Colors.black.withOpacity(.5), fontSize: calcTextSize(size)),) :
+      child: tile.isVisible? Text('${tile.value}', style: TextStyle(color: Colors.white,
+          shadows: const [
+            Shadow(color: Colors.black54, offset: Offset(1, 1)),
+          ],
+          fontFamily: 'Poppins', fontSize: calcTextSize(size - 12), fontWeight: FontWeight.w100),) :
       Container(),
     );
   }
