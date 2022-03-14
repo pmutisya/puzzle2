@@ -266,7 +266,6 @@ class _GameWidgetState extends State<GameWidget>
       children.addAll(widget.theme.getWinEffects(_controller.value, widget.game));
     }
     return Stack(
-      fit: StackFit.expand,
       children: children,
     );
   }

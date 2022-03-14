@@ -19,7 +19,8 @@ class GamePlayingScreen extends StatefulWidget {
   _GamePlayingScreenState createState() => _GamePlayingScreenState();
 }
 
-class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTickerProviderStateMixin {
+class _GamePlayingScreenState extends State<GamePlayingScreen> with
+  GameListener, SingleTickerProviderStateMixin {
   late AnimationController _controller;
 
   late MoveModel gameMovesModel;
@@ -36,10 +37,13 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
     super.initState();
     _controller = AnimationController(vsync: this);
     game = Game(widget.gameSize);
-    print('\nSIZE: ${widget.gameSize}');
+    print('SIZE: ${widget.gameSize}');
     print('created a game of size ${game.columns}x${game.rows}');
     theme = widget.theme;
     print('THEME: $theme');
+
+    GameTimes.instance.startGame(game);
+
     gameMovesModel = game.movesModel;
     gameBoard = GameBoard(game, key: gameBoardKey,
       mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',
@@ -56,8 +60,16 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
     print('\n\nUPDATE!!!');
     theme = widget.theme;
     game = Game(widget.gameSize);
-    print('THEME: $theme');
-    print('SIZE: ${widget.gameSize}\n\n');
+    game.addGameListener(this);
+    gameBoard = GameBoard(game, key: gameBoardKey,
+      mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',
+    );
+
+    setState(() {
+      GameTimes.instance.startGame(game);
+      print('THEME: $theme');
+      print('SIZE: ${widget.gameSize}\n\n');
+    });
   }
   @override
   void dispose() {
@@ -67,32 +79,45 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
   
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        // SvgPicture.asset('assets/svg/comic_bg.svg', fit: BoxFit.cover),
-        GameWidget(game: game, gameBoard: gameBoard, theme: theme,),
-        // Padding(padding: const EdgeInsets.all(20),
-        //   child: gameBoard),
-        Positioned(
-          right: 10, top: 10,
-          child: ResultsWidget(game),
-        ),
-        Positioned(
-          right: 10, bottom: 10,
-          child: GameStartButton(game, gameController),
-        ),
-        Positioned(
-          left: 10, bottom: 10,
-          child: GameClock(game),
-        ),
-        Positioned(left: 10, top: 10,
-          child: BackButton(
-            onPressed: (){
-              widget.listener(game, const Duration(seconds: 10));
-          },
-        ))
-      ]
+    return Scaffold(
+      body: Stack(
+        children: [
+          GameWidget(game: game, gameBoard: gameBoard, theme: theme,),
+          // Padding(padding: const EdgeInsets.all(20),
+          //   child: gameBoard),
+          Positioned(
+            right: 10, bottom: 10,
+            child: GameStartButton(game, gameController),
+          ),
+          Positioned(
+            left: 10, bottom: 10,
+            child: GameClock(game),
+          ),
+          Positioned(left: 10, top: 10,
+            child: BackButton(
+              onPressed: (){
+                widget.listener(game);
+            },
+          ))
+        ]
+      ),
     );
+  }
+
+  @override
+  void gameRestarted() {
+  }
+
+  @override
+  void gameWon() {
+    widget.listener(game,);
+  }
+
+  @override
+  void moveComplete(int score) {
+  }
+
+  @override
+  void moveStarted() {
   }
 }

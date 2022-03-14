@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -17,6 +19,7 @@ class LettersState extends State<Letters> with TickerProviderStateMixin {
   late AnimationController _flippingController;
   late int columns;
   late int rows;
+  Timer? flipFuture;
   static const List<Color> colors = [highlight, text, disabledText];
   int colorIndex = 0;
 
@@ -29,13 +32,14 @@ class LettersState extends State<Letters> with TickerProviderStateMixin {
       });
     });
     _flippingController = AnimationController(vsync: this, duration: const Duration(milliseconds: 1000));
-    _flippingController.addListener(() { 
-      setState(() {
-      });
+    _flippingController.addListener(() {
+      if (mounted) {
+        setState(() {});
+      }
     });
     _flippingController.addStatusListener((status) { 
       if (status == AnimationStatus.completed) {
-        _flipTiles();
+        flipFuture = _flipTiles();
       }
       else if (status == AnimationStatus.forward) {
         setState(() {
@@ -46,7 +50,7 @@ class LettersState extends State<Letters> with TickerProviderStateMixin {
         });
       }
     });
-    _flippingController.repeat(reverse: true, period: const Duration(milliseconds: 5000),);
+    // _flippingController.repeat(reverse: true, period: const Duration(milliseconds: 5000),);
     
     _controller.value = 1.0;
     columns = 0;
@@ -61,17 +65,24 @@ class LettersState extends State<Letters> with TickerProviderStateMixin {
 
   static Random random = Random();
 
-  Future<void> _flipTiles() async {
-    return Future.delayed(Duration(milliseconds: random.nextInt(10000)), () {
-      if (!_flippingController.isDismissed) {
-        _flippingController.forward(from: 0.0);
-      }
-    });
+  Timer? _flipTiles()  {
+    if (mounted) {
+      return Timer(Duration(milliseconds: random.nextInt(10000)), () {
+        if (!_flippingController.isDismissed) {
+          _flippingController.forward(from: 0.0);
+        }
+      });
+    }
+    else {
+      return null;
+    }
   }
   @override
   void dispose() {
+    if (flipFuture != null && flipFuture!.isActive) {
+      flipFuture!.cancel();
+    }
     _controller.dispose();
-    _flippingController.reset();
     _flippingController.dispose();
     super.dispose();
   }

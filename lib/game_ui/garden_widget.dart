@@ -43,7 +43,6 @@ class _GardenContainerState extends State<GardenContainer> with SingleTickerProv
     super.didUpdateWidget(oldWidget);
     double oldProgress = oldWidget.progress, progress = widget.progress;
     if (progress != oldProgress) {
-      print('going from $oldProgress to $progress');
       progressTween = Tween(begin: oldProgress, end: progress);
       _controller.forward(from: 0.0);
     }

@@ -14,7 +14,8 @@ import '../home_screen/letters.dart';
 
 class HomeScreen extends StatefulWidget {
   final SetOptionsListener listener;
-  const HomeScreen(this.listener, {Key? key}) : super(key: key);
+  final GameTheme theme;
+  const HomeScreen(this.listener, this.theme, {Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -26,7 +27,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late Game game;
   late GlobalKey<GameBoardState> gameBoardKey;
   late MoveModel movesModel;
-  GameTheme theme = const DefaultTheme();
+  late GameTheme theme;
   int gameSize = 16;
 
   @override
@@ -37,6 +38,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     movesModel = game.movesModel;
     gameBoardKey = GlobalKey();
 
+    theme = widget.theme;
+
     game.reset();
     _controller.addListener(() {setState(() {
     });});
@@ -44,8 +47,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   @override
+  void didUpdateWidget(covariant HomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    setState(() {
+      theme = widget.theme;
+    });
+  }
+
+  @override
   void dispose() {
-    _controller.reset();
     _controller.dispose();
     super.dispose();
   }
@@ -121,12 +131,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     showMenu(context: context, position:
                       RelativeRect.fromSize(const Offset(80, 10) & const Size(80, 80), overlay.size),
                       items: [
-                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown),
-                          label: Text('3x3 ${Scores.instance[3]}'), onPressed: (){},),),
-                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown),
-                          label: Text('4x4 ${Scores.instance[4]}'), onPressed: (){},),),
-                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown),
-                          label: Text('5x5 ${Scores.instance[5]}'), onPressed: (){},),),
+                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                          label: Text('3x3 ${Scores.instance[3]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                          label: Text('4x4 ${Scores.instance[4]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                          label: Text('5x5 ${Scores.instance[5]}', style: const TextStyle(color: text),), onPressed: (){},),),
                       ]);
                   },
                   child: Row(
@@ -278,14 +288,4 @@ class _HoverButtonState extends State<HoverButton> with SingleTickerProviderStat
         )
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-      title: 'Home Screen Tester',
-      home: Material(
-        child: HomeScreen((theme, size){}),
-      ),
-    )
-  );
 }

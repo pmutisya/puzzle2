@@ -3,6 +3,7 @@ import 'package:puzzle2/game_ui/garden_widget.dart';
 
 import 'domain.dart';
 import 'game_ui/effects_widgets.dart';
+import 'style.dart';
 
 abstract class GameTheme {
   final String tileType;
@@ -24,16 +25,16 @@ class DefaultTheme extends GameTheme {
   List<EffectsWidget> getEffects(double progress, Game game) {
     List<EffectsWidget> list = [];
     if (!game.won) {
-      list.add(ColoredPanelEffect(progress: progress, startColor: Colors.orangeAccent, endColor: Colors.white));
-      list.add(BeamsEffect(progress: progress, color: Colors.deepOrangeAccent,));
-      list.add(BeamsEffect(numberOfBeams: 11, progress: progress, innerRadius: progress,
-        color: Colors.red,));
+      list.add(ColoredPanelEffect(progress: progress, startColor: bg, endColor: highlight));
     }
     else {
       list.add(ColoredPanelEffect(progress: progress, startColor: Colors.white, endColor: Colors.orangeAccent));
       list.add(const CircularGlowWidget(
         minRadius: .25,
         centerColor: Colors.yellow, glowDuration: Duration(milliseconds: 1500)));
+      list.add(BeamsEffect(progress: progress, color: Colors.deepOrangeAccent,));
+      list.add(BeamsEffect(numberOfBeams: 11, progress: progress, innerRadius: progress,
+        color: Colors.red,));
     }
     return  list;
   }

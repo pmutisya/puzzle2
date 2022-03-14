@@ -32,30 +32,25 @@ class GameApp extends StatefulWidget {
 }
 
 typedef SetOptionsListener = Function(GameTheme theme, int size);
-typedef ResultsListener = Function(Game game, Duration time);
+typedef ResultsListener = Function(Game game);
 
 class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
   late AnimationController _controller;
   late GameTheme theme = const ModernTheme();
   late int gameSize = 16;
 
-  late TabController _tabController;
+  bool showingHome = true;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
-    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
-    _tabController.addListener(() {
-      setState(() {
-      });
-    });
+    showingHome = true;
   }
 
   @override
   void dispose() {
     _controller.dispose();
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -65,26 +60,23 @@ class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
       gameSize = size;
       print('starting game sized $gameSize');
       print('WITH THEME: $theme');
-      _tabController.animateTo(1);
+      setState(() {
+        showingHome = false;
+      });
     });
   }
 
-  void _showResults(Game game, Duration duration) {
+  void _showResults(Game game) {
     setState(() {
-      _tabController.animateTo(0);
+      showingHome = true;
     });
   }
+
   @override
   Widget build(BuildContext context) {
     return Material(
-        child: TabBarView(
-          controller: _tabController,
-          physics: const NeverScrollableScrollPhysics(),
-          children: [
-            HomeScreen(_startGame),
-            GamePlayingScreen(theme, gameSize, _showResults)
-          ],
-        )
+      child: showingHome? HomeScreen(_startGame, theme):
+          GamePlayingScreen(theme, gameSize, _showResults),
     );
   }
 }
@@ -103,6 +95,7 @@ class GameTime implements GameListener{
   }
   @override
   void gameWon() {
+    print('GAME ${game.rows} WON!!');
     end = DateTime.now();
     Scores.instance._submitTime(game.rows, end!.difference(start!));
   }
@@ -137,21 +130,28 @@ class Scores {
   Map<int, Duration> scores = {};
 
   _submitTime(int size, Duration duration) {
-    Duration? d = scores[size];
-    if (d == null || d > duration) {
-      scores[size] = duration;
+    if (duration.inSeconds > 5) {
+      print('WON IN ${printDuration(duration)}');
+      Duration? d = scores[size];
+      if (d == null || d > duration) {
+        scores[size] = duration;
+        print('$size NOW EQUALS ${scores[size]}');
+      }
     }
   }
   operator [](int size) {
+    print('Getting score for $size');
     Duration? d = scores[size];
+    print('GOT: $d');
     if (d == null) {
       return 'no times';
     }
     else {
-      printDuration(d);
+      return printDuration(d);
     }
   }
 }
+
 String printDuration(Duration duration) {
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));

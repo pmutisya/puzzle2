@@ -6,6 +6,9 @@ const Color highlight = Color(0xFFA15DF0);
 const Color text = Color(0xFFECEDF7);
 const Color disabledText = Color(0xFF7E7EAA);
 
+const Color yellow = Color(0xFFFFD74D);
+const Color green = Color(0xFF3BC66F);
+
 const LinearGradient gradient = LinearGradient(colors: [Color(0xFF846BF2), Color(0xFF6E84F8)]);
 
 ThemeData defaultTheme = ThemeData(
