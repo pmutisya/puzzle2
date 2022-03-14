@@ -209,6 +209,23 @@ class Game {
     return totalCorrect/(length - 1);
   }
 
+  bool canMoveRight() {
+    Point<int> p = zeroLocation;
+    return (p.x > 0);
+  }
+  bool canMoveLeft() {
+    Point<int> p = zeroLocation;
+    return (p.x < columns - 1);
+  }
+  bool canMoveDown() {
+    Point p = zeroLocation;
+    return (p.y > 0);
+  }
+  bool canMoveUp() {
+    Point<int> p = zeroLocation;
+    return (p.y < rows - 1);
+  }
+
   bool canTap(Tile tile) {
     Point<int> loc = getLocation(tile.position);
     return ((loc.x == zeroLocation.x) && (loc.y != zeroLocation.y)) ||

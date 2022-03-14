@@ -122,6 +122,39 @@ class GameBoardState extends State<GameBoard> with TickerProviderStateMixin, Gam
    }
   }
 
+  void moveRight() {
+    Point<int> p = game.zeroLocation;
+    if (game.canMoveRight()) {
+      Tile? tile = game.getTileAt(p.x - 1, p.y);
+      _tapped(tile!);
+    }
+  }
+
+
+  void moveLeft({Duration duration = defaultDuration}) {
+    Point<int> p = game.zeroLocation;
+    if (game.canMoveLeft()) {
+      Tile? tile = game.getTileAt(p.x + 1, p.y);
+      _tapped(tile!);
+    }
+  }
+
+  void moveDown({Duration duration = defaultDuration}) {
+    Point<int> p = game.zeroLocation;
+    if (game.canMoveDown()) {
+      Tile? tile = game.getTileAt(p.x, p.y - 1);
+      _tapped(tile!,);
+    }
+  }
+
+  void moveUp({Duration duration = defaultDuration}) {
+    Point<int> p = game.zeroLocation;
+    if (game.canMoveUp()) {
+      Tile? tile = game.getTileAt(p.x, p.y + 1);
+      _tapped(tile!);
+    }
+  }
+
   void animateExecutedMove({Duration duration = defaultDuration}) {
     activeTile = null;
     setState(() {

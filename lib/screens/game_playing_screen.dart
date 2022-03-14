@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:keymap/keymap.dart';
 import 'package:puzzle2/game_board.dart';
 import 'package:puzzle2/game_ui/game_controller.dart';
 import 'package:puzzle2/themes.dart';
@@ -87,28 +89,54 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
     _controller.dispose();
     super.dispose();
   }
-  
+
+  void moveRight() {
+    gameBoardKey.currentState?.moveRight();
+  }
+  void moveLeft() {
+    gameBoardKey.currentState?.moveLeft();
+  }
+  void moveUp() {
+    gameBoardKey.currentState?.moveUp();
+  }
+  void moveDown() {
+    gameBoardKey.currentState?.moveDown();
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          GameWidget(game: game, gameBoard: gameBoard, theme: theme,),
-          // Positioned(
-          //   right: 10, bottom: 10,
-          //   child: GameStartButton(game, gameController),
-          // ),
-          Positioned(
-            left: 10, bottom: 10,
-            child: GameClock(game),
-          ),
-          Positioned(left: 10, top: 10,
-            child: BackButton(
-              onPressed: (){
-                widget.listener(game);
-            },
-          ))
-        ]
+    return KeyboardWidget(
+      helpText: assetLoadedText, columnCount: 2,
+      bindings: [
+        KeyAction(LogicalKeyboardKey.keyL, 'Move the square to the right over', moveLeft),
+        KeyAction(LogicalKeyboardKey.keyJ, 'Move the square to the left over', moveRight),
+        KeyAction(LogicalKeyboardKey.keyK, 'Move the square below up', moveUp),
+        KeyAction(LogicalKeyboardKey.keyI, 'Move the square above down', moveDown),
+        KeyAction(LogicalKeyboardKey.keyB, 'Go back home', (){
+          widget.listener(game);
+        },),
+      ],
+      child: Scaffold(
+        body: Stack(
+          children: [
+            GameWidget(game: game, gameBoard: gameBoard, theme: theme,),
+            // Positioned(
+            //   right: 10, bottom: 10,
+            //   child: GameStartButton(game, gameController),
+            // ),
+            Positioned(
+              left: 10, bottom: 10,
+              child: GameClock(game),
+            ),
+            Positioned(left: 10, top: 10,
+              child: BackButton(
+                onPressed: (){
+                  widget.listener(game);
+              },
+            ))
+          ]
+        ),
       ),
     );
   }

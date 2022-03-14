@@ -76,7 +76,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void themeSelected(GameTheme newTheme) {
-    print('THEME: ${newTheme.name}');
     setState(() {
       theme = newTheme;
     });
