@@ -8,7 +8,9 @@ import '../move_model.dart';
 import '../game_ui/game_widgets.dart';
 
 class GamePlayingScreen extends StatefulWidget {
-  const GamePlayingScreen({Key? key}) : super(key: key);
+  final GameTheme theme;
+  final int gameSize;
+  const GamePlayingScreen(this.theme, this.gameSize, {Key? key}) : super(key: key);
 
   @override
   _GamePlayingScreenState createState() => _GamePlayingScreenState();
@@ -30,8 +32,8 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-    game = Game(16);
-    theme = const ModernTheme();
+    game = Game(widget.gameSize);
+    theme = widget.theme;
     gameMovesModel = game.movesModel;
   }
 
@@ -43,7 +45,7 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with SingleTicker
   
   @override
   Widget build(BuildContext context) {
-    GameBoard gameBoard = GameBoard(game, showingOverlay: true, key: gameBoardKey,
+    GameBoard gameBoard = GameBoard(game, key: gameBoardKey,
       mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',
     );
     GameController gameController = GameController(game, gameBoardKey);

@@ -3,7 +3,6 @@ import 'package:puzzle2/game_board.dart';
 import 'package:puzzle2/themes.dart';
 
 import '../domain.dart';
-import '../screens/game_playing_screen.dart';
 import '../game_board.dart';
 import '../game_ui/game_controller.dart';
 

@@ -67,6 +67,7 @@ class LettersState extends State<Letters> with TickerProviderStateMixin {
   @override
   void dispose() {
     _controller.dispose();
+    _flippingController.dispose();
     super.dispose();
   }
 

@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:keymap/keymap.dart';
 import 'package:puzzle2/game_board.dart';
+import 'package:puzzle2/home_screen/theme_selector.dart';
 
 import 'domain.dart';
 import 'move_model.dart';
+import 'themes.dart';
 
 ///A test widget to run simulated games only
-class GameTester extends StatefulWidget {
+class AutoPlayer extends StatefulWidget {
   final bool autoplay;
-  const GameTester({this.autoplay = false, Key? key}) : super(key: key);
+  final Game? game;
+  final ThemeListener listener;
+  const AutoPlayer(this.game, this.listener, {this.autoplay = true, Key? key}) : super(key: key);
 
   @override
-  _GameTesterState createState() => _GameTesterState();
+  _AutoPlayerState createState() => _AutoPlayerState();
 }
 
-class _GameTesterState extends State<GameTester> with GameListener {
+class _AutoPlayerState extends State<AutoPlayer> with GameListener {
   late Game game;
   late GlobalKey<GameBoardState> gameBoardKey;
   late MoveModel movesModel;
@@ -24,6 +26,9 @@ class _GameTesterState extends State<GameTester> with GameListener {
   List<Move> animatingMoves = [];
 
   bool shuffling = true;
+
+  static const List<GameTheme> themes = [DefaultTheme(), ImageTheme(), IvoryTheme(), ModernTheme(),];
+  int selectedThemIndex = 0;
 
   @override
   void initState() {
@@ -101,46 +106,31 @@ class _GameTesterState extends State<GameTester> with GameListener {
     });
   }
 
+  void _shiftTheme() {
+    setState(() {
+      selectedThemIndex++;
+      if (selectedThemIndex >= themes.length) {
+        selectedThemIndex = 0;
+      }
+      widget.listener(themes[selectedThemIndex]);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: KeyboardWidget(
-        bindings: [
-          KeyAction(LogicalKeyboardKey.keyS, 'Shuffle the board', shuffle),
-          KeyAction(LogicalKeyboardKey.keyR, 'Reset the game', resetGame),
-          KeyAction(LogicalKeyboardKey.keyV, 'Reverse solve', reverseSolve),
-          KeyAction(LogicalKeyboardKey.keyS, 'Shuffle (no animation)', shuffleImmediately, isShiftPressed: true),
-        ],
-        child: Stack(
-          children: [
-            Container(
-              width: double.infinity, height: double.infinity,
-              color: Colors.black,
-            ),
-            GameBoard(game, showingOverlay: true,
-              mode: 'rounded', key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
-            )
-          ],
-        ),
-      ),
+    return Stack(
+      children: [
+        // const SizedBox(
+        //   width: double.infinity, height: double.infinity,
+        // ),
+        GestureDetector(
+          onTap: _shiftTheme,
+          child: GameBoard(game,
+            mode: themes[selectedThemIndex].tileType, key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
+          ),
+        )
+      ],
     );
   }
 }
 
-void main() {
-  runApp(MaterialApp(
-    title: 'Game Tester',
-    theme: ThemeData(
-      fontFamily: 'Poppins'
-    ),
-    darkTheme: ThemeData(
-      brightness: Brightness.dark,
-      fontFamily: 'Poppins'
-    ),
-    home: Container(
-      color: Colors.blue,
-      padding: const EdgeInsets.all(20.0),
-      child: const GameTester(),
-    ),
-  ));
-}

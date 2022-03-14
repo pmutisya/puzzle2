@@ -44,9 +44,9 @@ class TileWidget extends StatelessWidget {
             style: TextStyle(fontWeight: FontWeight.bold, fontSize: calcTextSize(size)),) :
             Container(),
         ),
-        tile.isVisible? Positioned(top: 12, left: 12,
-          child: Text('[${tile.location!.x}, ${tile.location!.y}]', style: const TextStyle(fontSize: 10),),
-        ) : Container(),
+        // tile.isVisible? Positioned(top: 12, left: 12,
+        //   child: Text('[${tile.location!.x}, ${tile.location!.y}]', style: const TextStyle(fontSize: 10),),
+        // ) : Container(),
       ],
     );
   }

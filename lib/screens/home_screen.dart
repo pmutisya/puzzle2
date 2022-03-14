@@ -1,16 +1,19 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:puzzle2/game_autoplay.dart';
 import 'package:puzzle2/home_screen/theme_selector.dart';
 import 'package:puzzle2/move_model.dart';
 import 'package:puzzle2/themes.dart';
 
 import '../game_board.dart';
 import '../domain.dart';
+import '../main.dart';
 import '../home_screen/letters.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final SetOptionsListener listener;
+  const HomeScreen(this.listener, {Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -46,6 +49,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void themeSelected(GameTheme newTheme) {
+    print('THEME: ${newTheme.name}');
     setState(() {
       theme = newTheme;
     });
@@ -72,7 +76,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   scale: scaleTween.evaluate(_controller),
                   child: Transform.translate(
                     offset: Offset(0.0, sin(_controller.value*2*pi)*20),
-                    child: GameBoard(game, mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',))),
+                    child: AutoPlayer(game, themeSelected, autoplay: false,)
+                  ),
+                    // child: GameBoard(game, mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',))
+                ),
               ),
               Positioned(
                 left: 0, top: 20,
@@ -90,17 +97,17 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     mainAxisSize: MainAxisSize.max,
-                    children: const [
-                      StartButton(3),
-                      StartButton(4),
-                      StartButton(5),
+                    children: [
+                      StartButton(3, theme, widget.listener),
+                      StartButton(4, theme, widget.listener),
+                      StartButton(5, theme, widget.listener),
                     ],
                   ),
                 ),
               ),
             ],
           ),
-          floatingActionButton: ThemeSelector(themeSelected)
+          floatingActionButton: ThemeSelector([themeSelected])
             // Positioned(
             //   left: 0, bottom: 100,
             //   child: Container(
@@ -117,7 +124,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
 class StartButton extends StatefulWidget {
   final int size;
-  const StartButton(this.size, {Key? key}) :
+  final GameTheme theme;
+  final SetOptionsListener listener;
+
+  const StartButton(this.size, this.theme, this.listener, {Key? key}) :
     assert(size == 3 || size == 4 || size == 5, "Choose 3x3, 4x4 or 5x5"),
     super(key: key);
 
@@ -154,7 +164,9 @@ class _StartButtonState extends State<StartButton> with SingleTickerProviderStat
       duration: const Duration(milliseconds: 450),
       // margin: const EdgeInsets.all(10),
       child: InkWell(
-        onTap: (){},
+        onTap: (){
+          widget.listener(widget.theme, size*size);
+        },
         onHover: (v) {
           setState(() {
               hovering = v;
@@ -213,11 +225,10 @@ class OctaClipper extends CustomClipper<Path> {
 }
 
 void main() {
-  runApp(
-    const MaterialApp(
+  runApp(MaterialApp(
       title: 'Home Screen Tester',
       home: Material(
-        child: HomeScreen(),
+        child: HomeScreen((theme, size){}),
       ),
     )
   );

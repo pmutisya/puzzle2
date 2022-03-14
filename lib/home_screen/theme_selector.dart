@@ -7,8 +7,8 @@ import '../themes.dart';
 typedef ThemeListener = Function(GameTheme theme);
 
 class ThemeSelector extends StatefulWidget {
-  final ThemeListener listener;
-  const ThemeSelector(this.listener, {Key? key}) : super(key: key);
+  final List<ThemeListener> listeners;
+  const ThemeSelector(this.listeners, {Key? key}) : super(key: key);
 
   @override
   State<ThemeSelector> createState() => _ThemeSelectorState();
@@ -38,7 +38,11 @@ class _ThemeSelectorState extends State<ThemeSelector> with SingleTickerProvider
     List<Widget> children = [];
     for (int k =0; k < themes.length; k++) {
       children.add(ActionButton(
-        onPressed: () { widget.listener(themes[k]);},
+        onPressed: () {
+          for (ThemeListener listener in widget.listeners) {
+            listener(themes[k]);
+          }
+        },
         icon: Tooltip(
           message: themes[k].name,
           child: icons[k],

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:keymap/keymap.dart';
 import 'package:puzzle2/screens/game_playing_screen.dart';
+import 'package:puzzle2/themes.dart';
 
+import 'screens/home_screen.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -32,29 +34,52 @@ class GameApp extends StatefulWidget {
   _GameAppState createState() => _GameAppState();
 }
 
-class _GameAppState extends State<GameApp> with SingleTickerProviderStateMixin {
+typedef SetOptionsListener = Function(GameTheme theme, int size);
+
+class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
   late AnimationController _controller;
+  late GameTheme theme = const DefaultTheme();
+  late int gameSize = 16;
+
+  late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this);
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
+    _tabController = TabController(length: 2, vsync: this, initialIndex: 0);
+    _tabController.addListener(() {
+      setState(() {
+      });
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _tabController.dispose();
     super.dispose();
+  }
+
+  void _startGame(GameTheme newTheme, int size) {
+    setState(() {
+      theme = newTheme;
+      gameSize = size;
+      _tabController.animateTo(1);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Material(
-        child: Stack(
-          children: const [
-            GamePlayingScreen()
+        child: TabBarView(
+          controller: _tabController,
+          physics: const NeverScrollableScrollPhysics(),
+          children: [
+            HomeScreen(_startGame),
+            GamePlayingScreen(theme, gameSize)
           ],
-        ),
+        )
     );
   }
 }
