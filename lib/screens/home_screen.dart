@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:keymap/keymap.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:puzzle2/game_autoplay.dart';
 import 'package:puzzle2/move_model.dart';
@@ -29,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late MoveModel movesModel;
   late GameTheme theme;
   int gameSize = 16;
+  String? assetLoadedText;
 
   @override
   void initState() {
@@ -44,8 +47,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     _controller.addListener(() {setState(() {
     });});
     _controller.repeat(reverse: true);
+    loadAssetText();
   }
-
+  Future<void> loadAssetText() async {
+    assetLoadedText = await DefaultAssetBundle.of(context).loadString('assets/home_screen_help.md');
+    setState(() {
+    });
+  }
   @override
   void didUpdateWidget(covariant HomeScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
@@ -74,82 +82,99 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     });
   }
 
+  List<KeyAction> _getShortcuts() {
+    return [
+      KeyAction(LogicalKeyboardKey.digit3, 'Start a 3x3 Game', () {
+        sizeSelected(theme, 9);
+      }),
+      KeyAction(LogicalKeyboardKey.digit4, 'Start a 4x4 Game', () {
+        sizeSelected(theme, 16);
+      }),
+      KeyAction(LogicalKeyboardKey.digit5, 'Start a 5x5 Game', () {
+        sizeSelected(theme, 25);
+      }),
+    ];
+  }
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
         double ss = min(constraints.maxWidth, constraints.maxHeight);
 
-        return Scaffold(
-          body: Stack(
-            children: [
-              Container(
-                width: double.infinity, height: double.infinity,
-                decoration: const BoxDecoration(
-                  color: darkBG
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(ss/10),
-                child: Transform.scale(
-                  scale: scaleTween.evaluate(_controller),
-                  child: Transform.translate(
-                    offset: Offset(0.0, sin(_controller.value*2*pi)*20),
-                    child: AutoPlayer(game, themeSelected, autoplay: false,)
-                  ),
-                    // child: GameBoard(game, mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',))
-                ),
-              ),
-              Positioned(
-                left: 0, top: 20,
-                child: Container(
-                  padding: const EdgeInsets.all(10.0),
-                  height: constraints.maxHeight/5, width: constraints.maxWidth - 40,
-                  child: Letters(buildWord(tiles))),
-              ),
-              Positioned(
-                left: 0, bottom: 0,
-                child: Container(
-                  width: constraints.maxWidth,
-                  height: 100,
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      StartButton(3, theme, sizeSelected, selected: false,),
-                      StartButton(4, theme, sizeSelected, selected: false,),
-                      StartButton(5, theme, sizeSelected, selected: false,),
-                    ],
+        return KeyboardWidget(
+          helpText: assetLoadedText,
+          bindings: _getShortcuts(),
+          child: Scaffold(
+            body: Stack(
+              children: [
+                Container(
+                  width: double.infinity, height: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: darkBG
                   ),
                 ),
-              ),
-              Positioned(left: 10, top: 10,
-                child: HoverButton(
-                  onTap: () {
-                    RenderBox overlay = Overlay.of(context)!.context.findRenderObject()! as RenderBox;
-                    showMenu(context: context, position:
-                      RelativeRect.fromSize(const Offset(80, 10) & const Size(80, 80), overlay.size),
-                      items: [
-                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
-                          label: Text('3x3 ${Scores.instance[3]}', style: const TextStyle(color: text),), onPressed: (){},),),
-                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
-                          label: Text('4x4 ${Scores.instance[4]}', style: const TextStyle(color: text),), onPressed: (){},),),
-                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
-                          label: Text('5x5 ${Scores.instance[5]}', style: const TextStyle(color: text),), onPressed: (){},),),
-                      ]);
-                  },
-                  child: Row(
-                    children: const [
-                      Icon(LineIcons.award),
-                      // Text('High Scores')
-                    ],
+                Padding(
+                  padding: EdgeInsets.all(ss/10),
+                  child: Transform.scale(
+                    scale: scaleTween.evaluate(_controller),
+                    child: Transform.translate(
+                      offset: Offset(0.0, sin(_controller.value*2*pi)*20),
+                      child: AutoPlayer(game, themeSelected, autoplay: false,)
+                    ),
+                      // child: GameBoard(game, mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',))
                   ),
                 ),
-              ),
-            ],
+                Positioned(
+                  left: 0, top: 20,
+                  child: Container(
+                    padding: const EdgeInsets.all(10.0),
+                    height: constraints.maxHeight/5, width: constraints.maxWidth - 40,
+                    child: Letters(buildWord(tiles))),
+                ),
+                Positioned(
+                  left: 0, bottom: 0,
+                  child: Container(
+                    width: constraints.maxWidth,
+                    height: 100,
+                    alignment: Alignment.center,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        StartButton(3, theme, sizeSelected, selected: false,),
+                        StartButton(4, theme, sizeSelected, selected: false,),
+                        StartButton(5, theme, sizeSelected, selected: false,),
+                      ],
+                    ),
+                  ),
+                ),
+                Positioned(left: 10, top: 10,
+                  child: HoverButton(
+                    onTap: () {
+                      RenderBox overlay = Overlay.of(context)!.context.findRenderObject()! as RenderBox;
+                      showMenu(context: context, position:
+                        RelativeRect.fromSize(const Offset(80, 10) & const Size(80, 80), overlay.size),
+                        items: [
+                          PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                            label: Text('3x3 ${Scores.instance[3]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                          PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                            label: Text('4x4 ${Scores.instance[4]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                          PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                            label: Text('5x5 ${Scores.instance[5]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                        ]);
+                    },
+                    child: Row(
+                      children: const [
+                        Icon(LineIcons.award),
+                        // Text('High Scores')
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            // floatingActionButton: ThemeSelector([themeSelected])
           ),
-          // floatingActionButton: ThemeSelector([themeSelected])
         );
       }
     );

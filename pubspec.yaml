@@ -63,6 +63,8 @@ flutter:
   assets:
     - assets/images/
     - assets/svg/
+    - assets/home_screen_help.md
+    - assets/playing.md
 
   fonts:
     - family: Poppins

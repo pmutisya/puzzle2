@@ -36,16 +36,17 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
 
   Timer? delayTimer;
 
+  String? assetLoadedText;
+
   @override
   void initState() {
     super.initState();
+    loadAssetText();
+
     _controller = AnimationController(vsync: this);
     game = Game(widget.gameSize);
     game.addGameListener(this);
-    print('SIZE: ${widget.gameSize}');
-    print('created a game of size ${game.columns}x${game.rows}');
     theme = widget.theme;
-    print('THEME: $theme');
 
     GameTimes.instance.startGame(game);
 
@@ -59,6 +60,11 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
     });
   }
 
+  Future<void> loadAssetText() async {
+    assetLoadedText = await DefaultAssetBundle.of(context).loadString('assets/playing.md');
+    setState(() {
+    });
+  }
   @override
   void didUpdateWidget(GamePlayingScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
