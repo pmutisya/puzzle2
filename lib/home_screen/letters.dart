@@ -63,7 +63,9 @@ class LettersState extends State<Letters> with TickerProviderStateMixin {
 
   Future<void> _flipTiles() async {
     return Future.delayed(Duration(milliseconds: random.nextInt(10000)), () {
-      _flippingController.forward(from: 0.0);
+      if (!_flippingController.isDismissed) {
+        _flippingController.forward(from: 0.0);
+      }
     });
   }
   @override
