@@ -37,6 +37,7 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
     super.initState();
     _controller = AnimationController(vsync: this);
     game = Game(widget.gameSize);
+    game.addGameListener(this);
     print('SIZE: ${widget.gameSize}');
     print('created a game of size ${game.columns}x${game.rows}');
     theme = widget.theme;
@@ -57,7 +58,6 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
   @override
   void didUpdateWidget(GamePlayingScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
-    print('\n\nUPDATE!!!');
     theme = widget.theme;
     game = Game(widget.gameSize);
     game.addGameListener(this);
@@ -67,8 +67,6 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
 
     setState(() {
       GameTimes.instance.startGame(game);
-      print('THEME: $theme');
-      print('SIZE: ${widget.gameSize}\n\n');
     });
   }
   @override
@@ -83,12 +81,10 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
       body: Stack(
         children: [
           GameWidget(game: game, gameBoard: gameBoard, theme: theme,),
-          // Padding(padding: const EdgeInsets.all(20),
-          //   child: gameBoard),
-          Positioned(
-            right: 10, bottom: 10,
-            child: GameStartButton(game, gameController),
-          ),
+          // Positioned(
+          //   right: 10, bottom: 10,
+          //   child: GameStartButton(game, gameController),
+          // ),
           Positioned(
             left: 10, bottom: 10,
             child: GameClock(game),

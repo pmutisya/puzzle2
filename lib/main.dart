@@ -58,8 +58,6 @@ class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
     setState(() {
       theme = newTheme;
       gameSize = size;
-      print('starting game sized $gameSize');
-      print('WITH THEME: $theme');
       setState(() {
         showingHome = false;
       });
@@ -95,7 +93,6 @@ class GameTime implements GameListener{
   }
   @override
   void gameWon() {
-    print('GAME ${game.rows} WON!!');
     end = DateTime.now();
     Scores.instance._submitTime(game.rows, end!.difference(start!));
   }
@@ -131,18 +128,14 @@ class Scores {
 
   _submitTime(int size, Duration duration) {
     if (duration.inSeconds > 5) {
-      print('WON IN ${printDuration(duration)}');
       Duration? d = scores[size];
       if (d == null || d > duration) {
         scores[size] = duration;
-        print('$size NOW EQUALS ${scores[size]}');
       }
     }
   }
   operator [](int size) {
-    print('Getting score for $size');
     Duration? d = scores[size];
-    print('GOT: $d');
     if (d == null) {
       return 'no times';
     }
