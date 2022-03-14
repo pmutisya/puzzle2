@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:puzzle2/game_board.dart';
 import 'package:puzzle2/game_ui/game_controller.dart';
@@ -31,6 +33,8 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
   late GameController gameController;
 
   GlobalKey<GameBoardState> gameBoardKey = GlobalKey();
+
+  Timer? delayTimer;
 
   @override
   void initState() {
@@ -71,6 +75,9 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
   }
   @override
   void dispose() {
+    if (delayTimer != null && delayTimer!.isActive) {
+      delayTimer!.cancel();
+    }
     _controller.dispose();
     super.dispose();
   }
@@ -106,9 +113,19 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
 
   @override
   void gameWon() {
-    widget.listener(game,);
+    print('GAME WON!!2');
+    setState(() {
+
+    });
+    _delayedSwitch();
   }
 
+  void _delayedSwitch() {
+    print('delayed switch');
+    delayTimer = Timer(const Duration(milliseconds: 2500),(){
+      widget.listener(game,);
+    });
+  }
   @override
   void moveComplete(int score) {
   }

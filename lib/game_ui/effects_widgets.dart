@@ -61,6 +61,7 @@ class StarsFieldState extends State<StarsField> {
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
+      size: const Size(double.infinity, double.infinity),
       painter: StarsPainter(alignments, radius: widget.progress, color: widget.starColor),
     );
   }
@@ -92,6 +93,7 @@ class _BeamsEffectState extends State<BeamsEffect> {
   Widget build(BuildContext context) {
     double angle = widget.reverse? 2.0*pi*(1 - widget.progress) : 2.0*pi*widget.progress;
     return CustomPaint(
+      size: const Size(double.infinity, double.infinity),
       painter: BeamsPainter(angle: angle, beams: widget.numberOfBeams,
           color: widget.color, innerRadius: 0.01, center: widget.alignment,
           startingAngle: widget.startingAngle),

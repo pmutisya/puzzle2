@@ -13,6 +13,7 @@ abstract class GameTheme {
 
   List<EffectsWidget> getEffects(double progress, Game game);
   List<EffectsWidget> getAboveGameEffects(double progress, Game game);
+  List<EffectsWidget> getBelowWinEffects(double progress, Game game);
   List<EffectsWidget> getWinEffects(double progress, Game game);
 }
 
@@ -27,21 +28,22 @@ class DefaultTheme extends GameTheme {
     if (!game.won) {
       list.add(ColoredPanelEffect(progress: progress, startColor: bg, endColor: highlight));
     }
-    else {
-      list.add(ColoredPanelEffect(progress: progress, startColor: Colors.white, endColor: Colors.orangeAccent));
-      list.add(const CircularGlowWidget(
-        minRadius: .25,
-        centerColor: Colors.yellow, glowDuration: Duration(milliseconds: 1500)));
-      list.add(BeamsEffect(progress: progress, color: Colors.deepOrangeAccent,));
-      list.add(BeamsEffect(numberOfBeams: 11, progress: progress, innerRadius: progress,
-        color: Colors.red,));
-    }
     return  list;
   }
 
   @override
   List<EffectsWidget> getAboveGameEffects(double progress, Game game) {
     return [];
+  }
+
+  @override
+  List<EffectsWidget> getBelowWinEffects(double progress, Game game) {
+    List<EffectsWidget> list = [];
+    list.add(ColoredPanelEffect(progress: progress, startColor: Colors.white, endColor: Colors.orangeAccent));
+    list.add(BeamsEffect(progress: progress, color: Colors.deepOrangeAccent,));
+    list.add(BeamsEffect(numberOfBeams: 11, progress: progress, innerRadius: progress,
+      color: Colors.red,));
+    return list;
   }
 
   @override
@@ -67,6 +69,16 @@ class ImageTheme extends GameTheme {
   }
 
   @override
+  List<EffectsWidget> getBelowWinEffects(double progress, Game game) {
+    List<EffectsWidget> list = [];
+    list.add(ColoredPanelEffect(progress: progress, startColor: Colors.white, endColor: Colors.orangeAccent));
+    list.add(BeamsEffect(progress: progress, color: Colors.deepOrangeAccent,));
+    list.add(BeamsEffect(numberOfBeams: 11, progress: progress, innerRadius: progress,
+      color: Colors.red,));
+    return list;
+  }
+
+  @override
   List<EffectsWidget> getWinEffects(double progress, Game game) {
     return [
       StarsField(progress: progress, starCount: 40,)
@@ -88,6 +100,15 @@ class IvoryTheme extends GameTheme {
   }
 
   @override
+  List<EffectsWidget> getBelowWinEffects(double progress, Game game) {
+    List<EffectsWidget> list = [];
+    list.add(BeamsEffect(progress: progress, color: Colors.indigo,));
+    list.add(BeamsEffect(numberOfBeams: 11, progress: progress, innerRadius: progress,
+      color: Colors.white,));
+    return list;
+  }
+
+  @override
   List<EffectsWidget> getWinEffects(double progress, Game game) {
     return [
       StarsField(progress: progress, starCount: 40,)
@@ -106,6 +127,15 @@ class ModernTheme extends GameTheme {
     return [
       GardenContainer(8, progress: progress)
     ];
+  }
+  @override
+  List<EffectsWidget> getBelowWinEffects(double progress, Game game) {
+    List<EffectsWidget> list = [];
+    list.add(ColoredPanelEffect(progress: progress, startColor: Colors.white, endColor: Colors.orangeAccent));
+    list.add(BeamsEffect(progress: progress, color: Colors.deepOrangeAccent,));
+    list.add(BeamsEffect(numberOfBeams: 11, progress: progress, innerRadius: progress,
+      color: Colors.red,));
+    return list;
   }
 
   @override

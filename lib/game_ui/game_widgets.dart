@@ -261,6 +261,9 @@ class _GameWidgetState extends State<GameWidget>
   Widget build(BuildContext context) {
     List<Widget> children = [];
     children.addAll(widget.theme.getEffects(widget.game.percentCorrect, widget.game));
+    if (widget.game.won) {
+      children.addAll(widget.theme.getBelowWinEffects(_controller.value, widget.game));
+    }
     children.add(widget.gameBoard);
     if (widget.game.won) {
       children.addAll(widget.theme.getWinEffects(_controller.value, widget.game));
@@ -276,6 +279,7 @@ class _GameWidgetState extends State<GameWidget>
 
   @override
   void gameWon() {
+    print('playing effects');
     _controller.forward(from: 0.0);
   }
 

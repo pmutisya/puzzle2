@@ -36,7 +36,7 @@ typedef ResultsListener = Function(Game game);
 
 class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
   late AnimationController _controller;
-  late GameTheme theme = const ModernTheme();
+  late GameTheme theme = const DefaultTheme();
   late int gameSize = 16;
 
   bool showingHome = true;
