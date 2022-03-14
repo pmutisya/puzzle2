@@ -99,78 +99,104 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return LayoutBuilder(
       builder: (context, constraints) {
         double ss = min(constraints.maxWidth, constraints.maxHeight);
+        bool isLandscapeLarge = constraints.maxWidth > 800;
 
+        List<Widget> children = [
+          Container(
+            width: double.infinity, height: double.infinity,
+            decoration: const BoxDecoration(
+                color: darkBG
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(ss/10),
+            child: Transform.scale(
+              scale: scaleTween.evaluate(_controller),
+              child: Transform.translate(
+                  offset: Offset(0.0, sin(_controller.value*2*pi)*20),
+                  child: AutoPlayer(game, themeSelected, autoplay: false,)
+              ),
+              // child: GameBoard(game, mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',))
+            ),
+          ),
+          Positioned(
+            left: 0, top: 20,
+            child: Container(
+                padding: const EdgeInsets.all(10.0),
+                height: constraints.maxHeight/5, width: constraints.maxWidth - 40,
+                child: Letters(buildWord(tiles))),
+          ),
+          Positioned(
+            left: 0, bottom: 0,
+            child: Container(
+              width: constraints.maxWidth,
+              height: 100,
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  StartButton(3, theme, sizeSelected, selected: false,),
+                  StartButton(4, theme, sizeSelected, selected: false,),
+                  StartButton(5, theme, sizeSelected, selected: false,),
+                ],
+              ),
+            ),
+          ),
+          isLandscapeLarge?
+          Card(
+            margin: const EdgeInsets.all(20),
+            elevation: 20,
+            color: bg,
+            child: Container(
+              width: 200, height: 240,
+              alignment: Alignment.center,
+              // margin: const EdgeInsets.all(10),
+              child: Column(mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Text('Best Times', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                  PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                    label: Text('3x3 ${Scores.instance[3]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                  PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                    label: Text('4x4 ${Scores.instance[4]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                  PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                    label: Text('5x5 ${Scores.instance[5]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                ],
+              ),
+            ),
+          )
+          :Positioned(left: 10, top: 10,
+            child: HoverButton(
+              onTap: () {
+                RenderBox overlay = Overlay.of(context)!.context.findRenderObject()! as RenderBox;
+                showMenu(context: context, position:
+                RelativeRect.fromSize(const Offset(80, 10) & const Size(80, 80), overlay.size),
+                    items: [
+                      PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                        label: Text('3x3 ${Scores.instance[3]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                      PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                        label: Text('4x4 ${Scores.instance[4]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                      PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                        label: Text('5x5 ${Scores.instance[5]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                    ]);
+              },
+              child: Row(
+                children: const [
+                  Icon(LineIcons.award),
+                  // Text('High Scores')
+                ],
+              ),
+            ),
+          ),
+        ];
         return KeyboardWidget(
           helpText: assetLoadedText,
           bindings: _getShortcuts(),
           child: Scaffold(
             body: Stack(
-              children: [
-                Container(
-                  width: double.infinity, height: double.infinity,
-                  decoration: const BoxDecoration(
-                    color: darkBG
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.all(ss/10),
-                  child: Transform.scale(
-                    scale: scaleTween.evaluate(_controller),
-                    child: Transform.translate(
-                      offset: Offset(0.0, sin(_controller.value*2*pi)*20),
-                      child: AutoPlayer(game, themeSelected, autoplay: false,)
-                    ),
-                      // child: GameBoard(game, mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',))
-                  ),
-                ),
-                Positioned(
-                  left: 0, top: 20,
-                  child: Container(
-                    padding: const EdgeInsets.all(10.0),
-                    height: constraints.maxHeight/5, width: constraints.maxWidth - 40,
-                    child: Letters(buildWord(tiles))),
-                ),
-                Positioned(
-                  left: 0, bottom: 0,
-                  child: Container(
-                    width: constraints.maxWidth,
-                    height: 100,
-                    alignment: Alignment.center,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        StartButton(3, theme, sizeSelected, selected: false,),
-                        StartButton(4, theme, sizeSelected, selected: false,),
-                        StartButton(5, theme, sizeSelected, selected: false,),
-                      ],
-                    ),
-                  ),
-                ),
-                Positioned(left: 10, top: 10,
-                  child: HoverButton(
-                    onTap: () {
-                      RenderBox overlay = Overlay.of(context)!.context.findRenderObject()! as RenderBox;
-                      showMenu(context: context, position:
-                        RelativeRect.fromSize(const Offset(80, 10) & const Size(80, 80), overlay.size),
-                        items: [
-                          PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
-                            label: Text('3x3 ${Scores.instance[3]}', style: const TextStyle(color: text),), onPressed: (){},),),
-                          PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
-                            label: Text('4x4 ${Scores.instance[4]}', style: const TextStyle(color: text),), onPressed: (){},),),
-                          PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
-                            label: Text('5x5 ${Scores.instance[5]}', style: const TextStyle(color: text),), onPressed: (){},),),
-                        ]);
-                    },
-                    child: Row(
-                      children: const [
-                        Icon(LineIcons.award),
-                        // Text('High Scores')
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+              fit: StackFit.loose,
+              children: children,
             ),
             // floatingActionButton: ThemeSelector([themeSelected])
           ),
