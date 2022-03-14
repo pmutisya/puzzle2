@@ -10,6 +10,9 @@ const Color yellow = Color(0xFFFFD74D);
 const Color green = Color(0xFF3BC66F);
 
 const LinearGradient gradient = LinearGradient(colors: [Color(0xFF846BF2), Color(0xFF6E84F8)]);
+const LinearGradient bgGradient = LinearGradient(begin: Alignment.topCenter,
+    stops: [0, .75, .99],
+    end: Alignment.bottomCenter, colors: [Colors.black, darkBG, highlight]);
 
 ThemeData defaultTheme = ThemeData(
   brightness: Brightness.dark,

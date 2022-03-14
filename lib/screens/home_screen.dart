@@ -105,7 +105,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           Container(
             width: double.infinity, height: double.infinity,
             decoration: const BoxDecoration(
-                color: darkBG
+              gradient: bgGradient,
+                // color: darkBG
             ),
           ),
           Padding(
@@ -120,14 +121,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           Positioned(
-            left: 0, top: 20,
+            left: 0, top: 30,
             child: Container(
                 padding: const EdgeInsets.all(10.0),
                 height: constraints.maxHeight/5, width: constraints.maxWidth - 40,
                 child: Letters(buildWord(tiles))),
           ),
           Positioned(
-            left: 0, bottom: 0,
+            left: 0, bottom: 20,
             child: Container(
               width: constraints.maxWidth,
               height: 100,
@@ -166,7 +167,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
           )
-          :Positioned(left: 10, top: 10,
+          :Positioned(left: 10, top: 30,
             child: HoverButton(
               onTap: () {
                 RenderBox overlay = Overlay.of(context)!.context.findRenderObject()! as RenderBox;

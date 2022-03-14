@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Game Tester',
       theme: defaultTheme,
       darkTheme: defaultTheme,
+      debugShowCheckedModeBanner: false,
       home: const GameApp(),
     );
   }
