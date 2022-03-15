@@ -147,15 +147,12 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
 
   @override
   void gameWon() {
-    print('GAME WON!!2');
     setState(() {
-
     });
     _delayedSwitch();
   }
 
   void _delayedSwitch() {
-    print('delayed switch');
     delayTimer = Timer(const Duration(milliseconds: 2500),(){
       widget.listener(game,);
     });
