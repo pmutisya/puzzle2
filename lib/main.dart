@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:logging/logging.dart';
 import 'package:puzzle2/screens/game_playing_screen.dart';
 import 'package:puzzle2/themes.dart';
 
@@ -36,23 +38,27 @@ typedef SetOptionsListener = Function(GameTheme theme, int size);
 typedef ResultsListener = Function(Game game);
 
 class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
-  late AnimationController _controller;
   late GameTheme theme = const DefaultTheme();
   late int gameSize = 16;
 
   bool showingHome = true;
 
+  late Logger logger;
+
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 400));
+    Logger.root.level = Level.ALL;
+    Logger.root.onRecord.listen((logRecord) {
+      if (kDebugMode) {
+        print('${logRecord.loggerName}: ${logRecord.message}');
+        if (logRecord.stackTrace != null) {
+          print('ERROR: ${logRecord.error}');
+          print('${logRecord.stackTrace}');
+        }
+      }
+    });
     showingHome = true;
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   void _startGame(GameTheme newTheme, int size) {
