@@ -9,6 +9,7 @@ import 'package:puzzle2/move_model.dart';
 import 'package:puzzle2/style.dart';
 import 'package:puzzle2/themes.dart';
 
+import '../app_controller.dart';
 import '../game_board.dart';
 import '../domain.dart';
 import '../main.dart';

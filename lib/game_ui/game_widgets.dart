@@ -7,7 +7,6 @@ import 'dart:async';
 import '../domain.dart';
 import '../game_board.dart';
 import '../game_ui/game_controller.dart';
-import '../main.dart';
 import '../style.dart';
 
 BoxDecoration getBoxDecoration() {
@@ -279,7 +278,6 @@ class _GameWidgetState extends State<GameWidget>
 
   @override
   void gameWon() {
-    print('playing effects');
     _controller.forward(from: 0.0);
   }
 

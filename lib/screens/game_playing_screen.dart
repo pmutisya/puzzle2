@@ -7,6 +7,7 @@ import 'package:puzzle2/game_board.dart';
 import 'package:puzzle2/game_ui/game_controller.dart';
 import 'package:puzzle2/themes.dart';
 
+import '../app_controller.dart';
 import '../domain.dart';
 import '../main.dart';
 import '../move_model.dart';
