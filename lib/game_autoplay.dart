@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:puzzle2/game_board.dart';
-import 'package:puzzle2/home_screen/theme_selector.dart';
 
+import 'app_controller.dart';
 import 'domain.dart';
 import 'move_model.dart';
-import 'themes.dart';
 
 ///A test widget to run simulated games only
 class AutoPlayer extends StatefulWidget {
   final bool autoplay;
-  final Game? game;
-  final ThemeListener listener;
-  const AutoPlayer(this.game, this.listener, {this.autoplay = true, Key? key}) : super(key: key);
+  // final ThemeListener listener;
+  const AutoPlayer({this.autoplay = true, Key? key}) : super(key: key);
 
   @override
   _AutoPlayerState createState() => _AutoPlayerState();
@@ -27,15 +26,17 @@ class _AutoPlayerState extends State<AutoPlayer> with GameListener {
 
   bool shuffling = true;
 
-  static const List<GameTheme> themes = [DefaultTheme(), ImageTheme(), IvoryTheme(), ModernTheme(),];
-  int selectedThemIndex = 0;
-
   @override
   void initState() {
     super.initState();
 
     gameBoardKey = GlobalKey<GameBoardState>();
-    game = Game(16, interactive: false);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    game = Game(Provider.of<AppController>(context).gameSize, interactive: false);
     movesModel = game.movesModel;
     game.reset();
 
@@ -43,6 +44,7 @@ class _AutoPlayerState extends State<AutoPlayer> with GameListener {
     if (widget.autoplay) {
       _autoplay();
     }
+
   }
 
   @override
@@ -108,16 +110,6 @@ class _AutoPlayerState extends State<AutoPlayer> with GameListener {
     });
   }
 
-  void _shiftTheme() {
-    setState(() {
-      selectedThemIndex++;
-      if (selectedThemIndex >= themes.length) {
-        selectedThemIndex = 0;
-      }
-      widget.listener(themes[selectedThemIndex]);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -126,9 +118,11 @@ class _AutoPlayerState extends State<AutoPlayer> with GameListener {
         //   width: double.infinity, height: double.infinity,
         // ),
         GestureDetector(
-          onTap: _shiftTheme,
+          onTap: () {
+            Provider.of<AppController>(context, listen: false).shiftTheme();
+          },
           child: GameBoard(game,
-            mode: themes[selectedThemIndex].tileType, key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
+            mode: Provider.of<AppController>(context).theme.tileType, key: gameBoardKey, assetImage: 'assets/images/image_bg.jpg',
           ),
         )
       ],

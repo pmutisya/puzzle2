@@ -4,9 +4,7 @@ import 'package:logging/logging.dart';
 import 'package:provider/provider.dart';
 import 'package:puzzle2/app_controller.dart';
 import 'package:puzzle2/screens/game_playing_screen.dart';
-import 'package:puzzle2/themes.dart';
 
-import 'domain.dart';
 import 'style.dart';
 import 'screens/home_screen.dart';
 
@@ -40,15 +38,7 @@ class GameApp extends StatefulWidget {
   _GameAppState createState() => _GameAppState();
 }
 
-typedef SetOptionsListener = Function(GameTheme theme, int size);
-typedef ResultsListener = Function(Game game);
-
 class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
-  GameTheme theme = const DefaultTheme();
-  int gameSize = 16;
-
-  bool showingHome = true;
-
   late Logger logger;
 
   @override
@@ -64,30 +54,15 @@ class _GameAppState extends State<GameApp> with TickerProviderStateMixin {
         }
       }
     });
-    showingHome = true;
-  }
-
-  void _startGame(GameTheme newTheme, int size) {
-    setState(() {
-      theme = newTheme;
-      gameSize = size;
-      setState(() {
-        showingHome = false;
-      });
-    });
-  }
-
-  void _showResults(Game game) {
-    setState(() {
-      showingHome = true;
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    bool showingHome = Provider.of<AppController>(context).displaying == Screens.homeScreen;
+
     return Material(
-      child: showingHome? HomeScreen(_startGame, theme):
-          GamePlayingScreen(theme, gameSize, _showResults),
+      child: showingHome? const HomeScreen():
+          const GamePlayingScreen(),
     );
   }
 }

@@ -9,7 +9,11 @@ enum Screens { homeScreen, gameScreen }
 
 class AppController with ChangeNotifier {
   late Game game;
-  GameTheme theme = const DefaultTheme();
+
+  static const List<GameTheme> themes = [DefaultTheme(), ImageTheme(), IvoryTheme(), ModernTheme(),];
+  int selectedThemIndex = 0;
+  GameTheme theme = themes[0];
+
   int gameSize = 16;
   Screens displaying = Screens.homeScreen;
 
@@ -19,8 +23,19 @@ class AppController with ChangeNotifier {
     logger.info('initialising AppController');
   }
 
+  void shiftTheme() {
+    selectedThemIndex++;
+    if (selectedThemIndex >= themes.length) {
+      selectedThemIndex = 0;
+    }
+    theme = themes[selectedThemIndex];
+    notifyListeners();
+  }
+
   void setTheme(GameTheme newTheme) {
     theme = newTheme;
+    selectedThemIndex = themes.indexOf(theme);
+
     logger.info('Setting game theme to ${theme.name}');
     notifyListeners();
   }

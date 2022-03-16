@@ -4,21 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keymap/keymap.dart';
 import 'package:line_icons/line_icons.dart';
+import 'package:provider/provider.dart';
 import 'package:puzzle2/game_autoplay.dart';
 import 'package:puzzle2/move_model.dart';
 import 'package:puzzle2/style.dart';
-import 'package:puzzle2/themes.dart';
 
 import '../app_controller.dart';
 import '../game_board.dart';
-import '../domain.dart';
-import '../main.dart';
 import '../home_screen/letters.dart';
 
 class HomeScreen extends StatefulWidget {
-  final SetOptionsListener listener;
-  final GameTheme theme;
-  const HomeScreen(this.listener, this.theme, {Key? key}) : super(key: key);
+  const HomeScreen({Key? key}) : super(key: key);
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -27,24 +23,20 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
   Tween<double> scaleTween = Tween(begin: 1.0, end: .95);
-  late Game game;
   late GlobalKey<GameBoardState> gameBoardKey;
   late MoveModel movesModel;
-  late GameTheme theme;
-  int gameSize = 16;
   String? assetLoadedText;
 
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 10000));
-    game = Game(16, interactive: false,);
-    movesModel = game.movesModel;
+    // int size = Provider.of<AppController>(context).gameSize;
+    // game = Game(size, interactive: false,);
+    // movesModel = game.movesModel;
     gameBoardKey = GlobalKey();
 
-    theme = widget.theme;
-
-    game.reset();
+    // game.reset();
     _controller.addListener(() {setState(() {
     });});
     _controller.repeat(reverse: true);
@@ -55,13 +47,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() {
     });
   }
-  @override
-  void didUpdateWidget(covariant HomeScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    setState(() {
-      theme = widget.theme;
-    });
-  }
 
   @override
   void dispose() {
@@ -69,29 +54,22 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  void sizeSelected(GameTheme _, int size) {
-    setState(() {
-      gameSize = size;
-    });
-    widget.listener(theme, size);
+  void startGameWithSize(int size) {
+    Provider.of<AppController>(context).setGameSize(size);
+    Provider.of<AppController>(context).startGame();
   }
 
-  void themeSelected(GameTheme newTheme) {
-    setState(() {
-      theme = newTheme;
-    });
-  }
 
   List<KeyAction> _getShortcuts() {
     return [
       KeyAction(LogicalKeyboardKey.digit3, 'Start a 3x3 Game', () {
-        sizeSelected(theme, 9);
+        startGameWithSize(9);
       }),
       KeyAction(LogicalKeyboardKey.digit4, 'Start a 4x4 Game', () {
-        sizeSelected(theme, 16);
+        startGameWithSize(16);
       }),
       KeyAction(LogicalKeyboardKey.digit5, 'Start a 5x5 Game', () {
-        sizeSelected(theme, 25);
+        startGameWithSize(25);
       }),
     ];
   }
@@ -116,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               scale: scaleTween.evaluate(_controller),
               child: Transform.translate(
                   offset: Offset(0.0, sin(_controller.value*2*pi)*20),
-                  child: AutoPlayer(game, themeSelected, autoplay: false,)
+                  child: const AutoPlayer(autoplay: false,)
               ),
               // child: GameBoard(game, mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',))
             ),
@@ -137,10 +115,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 mainAxisSize: MainAxisSize.max,
-                children: [
-                  StartButton(3, theme, sizeSelected, selected: false,),
-                  StartButton(4, theme, sizeSelected, selected: false,),
-                  StartButton(5, theme, sizeSelected, selected: false,),
+                children: const [
+                  StartButton(3, selected: false,),
+                  StartButton(4, selected: false,),
+                  StartButton(5, selected: false,),
                 ],
               ),
             ),
@@ -193,15 +171,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ];
         return KeyboardWidget(
-          helpText: assetLoadedText,
-          bindings: _getShortcuts(),
-          child: Scaffold(
-            body: Stack(
-              fit: StackFit.loose,
-              children: children,
+            helpText: assetLoadedText,
+            bindings: _getShortcuts(),
+            child: Scaffold(
+              body: Stack(
+                fit: StackFit.loose,
+                children: children,
+              ),
             ),
-            // floatingActionButton: ThemeSelector([themeSelected])
-          ),
         );
       }
     );
@@ -211,11 +188,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
 class StartButton extends StatefulWidget {
   final int size;
-  final GameTheme theme;
-  final SetOptionsListener listener;
   final bool selected;
 
-  const StartButton(this.size, this.theme, this.listener,
+  const StartButton(this.size,
     {this.selected = false, Key? key}) :
     assert(size == 3 || size == 4 || size == 5, "Choose 3x3, 4x4 or 5x5"),
     super(key: key);
@@ -254,7 +229,8 @@ class _StartButtonState extends State<StartButton> with SingleTickerProviderStat
       // margin: const EdgeInsets.all(10),
       child: InkWell(
         onTap: (){
-          widget.listener(widget.theme, size*size);
+          Provider.of<AppController>(context, listen: false).gameSize = size*size;
+          Provider.of<AppController>(context, listen: false).startGame();
         },
         onHover: (v) {
           setState(() {

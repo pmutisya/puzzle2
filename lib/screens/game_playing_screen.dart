@@ -3,22 +3,20 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:keymap/keymap.dart';
+import 'package:provider/provider.dart';
 import 'package:puzzle2/game_board.dart';
 import 'package:puzzle2/game_ui/game_controller.dart';
+import 'package:puzzle2/style.dart';
 import 'package:puzzle2/themes.dart';
 
 import '../app_controller.dart';
 import '../domain.dart';
-import '../main.dart';
 import '../move_model.dart';
 import '../game_ui/game_widgets.dart';
 
 class GamePlayingScreen extends StatefulWidget {
-  final GameTheme theme;
-  final int gameSize;
-  final ResultsListener listener;
 
-  const GamePlayingScreen(this.theme, this.gameSize, this.listener, {Key? key}) : super(key: key);
+  const GamePlayingScreen({Key? key}) : super(key: key);
 
   @override
   _GamePlayingScreenState createState() => _GamePlayingScreenState();
@@ -30,7 +28,6 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
 
   late MoveModel gameMovesModel;
   late Game game;
-  late GameTheme theme;
 
   late GameBoard gameBoard;
   late GameController gameController;
@@ -47,10 +44,19 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
     loadAssetText();
 
     _controller = AnimationController(vsync: this);
-    game = Game(widget.gameSize);
-    game.addGameListener(this);
-    theme = widget.theme;
 
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      gameController.shuffle();
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    game = Game(Provider.of<AppController>(context).gameSize);
+    game.addGameListener(this);
+
+    GameTheme theme = Provider.of<AppController>(context).theme;
     GameTimes.instance.startGame(game);
 
     gameMovesModel = game.movesModel;
@@ -58,9 +64,6 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
       mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',
     );
     gameController = GameController(game, gameBoardKey);
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
-      gameController.shuffle();
-    });
   }
 
   Future<void> loadAssetText() async {
@@ -68,20 +71,21 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
     setState(() {
     });
   }
-  @override
-  void didUpdateWidget(GamePlayingScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    theme = widget.theme;
-    game = Game(widget.gameSize);
-    game.addGameListener(this);
-    gameBoard = GameBoard(game, key: gameBoardKey,
-      mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',
-    );
 
-    setState(() {
-      GameTimes.instance.startGame(game);
-    });
-  }
+  // @override
+  // void didUpdateWidget(GamePlayingScreen oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   theme = widget.theme;
+  //   game = Game(widget.gameSize);
+  //   game.addGameListener(this);
+  //   gameBoard = GameBoard(game, key: gameBoardKey,
+  //     mode: theme.tileType, assetImage: 'assets/images/image_bg.jpg',
+  //   );
+  //
+  //   setState(() {
+  //     GameTimes.instance.startGame(game);
+  //   });
+  // }
   @override
   void dispose() {
     if (delayTimer != null && delayTimer!.isActive) {
@@ -115,13 +119,13 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
         KeyAction(LogicalKeyboardKey.keyK, 'Move the square below up', moveUp),
         KeyAction(LogicalKeyboardKey.keyI, 'Move the square above down', moveDown),
         KeyAction(LogicalKeyboardKey.keyB, 'Go back home', (){
-          widget.listener(game);
+          Provider.of<AppController>(context).showResults();
         },),
       ],
       child: Scaffold(
         body: Stack(
           children: [
-            GameWidget(game: game, gameBoard: gameBoard, theme: theme,),
+            GameWidget(game: game, gameBoard: gameBoard, theme: Provider.of<AppController>(context).theme,),
             // Positioned(
             //   right: 10, bottom: 10,
             //   child: GameStartButton(game, gameController),
@@ -131,11 +135,22 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
               child: GameClock(game),
             ),
             Positioned(left: 10, top: 10,
-              child: BackButton(
-                onPressed: (){
-                  widget.listener(game);
-              },
-            ))
+              child: Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(6),
+                decoration: const BoxDecoration(
+                  color: bg, shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black38, blurRadius: 4, spreadRadius: 4)
+                  ]
+                ),
+                child: BackButton(
+                  color: Colors.white,
+                  onPressed: (){
+                    Provider.of<AppController>(context).showResults();
+                },
+            ),
+              ))
           ]
         ),
       ),
@@ -155,7 +170,7 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
 
   void _delayedSwitch() {
     delayTimer = Timer(const Duration(milliseconds: 2500),(){
-      widget.listener(game,);
+      Provider.of<AppController>(context, listen: false).showResults();
     });
   }
   @override
