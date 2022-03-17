@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -23,8 +24,10 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   late AnimationController _controller;
+  late Timer themeTimer;
   Tween<double> scaleTween = Tween(begin: 1.0, end: .95);
   late GlobalKey<GameBoardState> gameBoardKey;
+  late GlobalKey<KeyboardWidgetState> helpKey;
   late MoveModel movesModel;
   String? assetLoadedText;
 
@@ -32,14 +35,27 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 10000));
+    themeTimer = Timer.periodic(const Duration(seconds: 8), (timer) {
+      Provider.of<AppController>(context, listen: false).shiftTheme();
+    });
+
     // int size = Provider.of<AppController>(context).gameSize;
     // game = Game(size, interactive: false,);
     // movesModel = game.movesModel;
     gameBoardKey = GlobalKey();
 
+    helpKey = GlobalKey();
+
     // game.reset();
     _controller.addListener(() {setState(() {
     });});
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        setState(() {
+          Provider.of<AppController>(context, listen: false).shiftTheme();
+        });
+      }
+    });
     _controller.repeat(reverse: true);
     loadAssetText();
   }
@@ -51,6 +67,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   void dispose() {
+    if (themeTimer.isActive) {
+      themeTimer.cancel();
+    }
     _controller.dispose();
     super.dispose();
   }
@@ -106,6 +125,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 padding: const EdgeInsets.all(10.0),
                 height: constraints.maxHeight/5, width: constraints.maxWidth - 40,
                 child: Letters(buildWord(tiles))),
+          ),
+          Positioned(
+            right: 20, top: 30,
+            child: Tooltip(
+              message: 'Show keyboard shortcuts',
+              child: HoverButton(
+                  onTap: () {
+                    helpKey.currentState?.toggleOverlay();
+                  },
+                  child: const Icon(Icons.help_outline_sharp),
+              ),
+            ),
           ),
           Positioned(
             left: 0, bottom: 20,
@@ -172,14 +203,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ];
         return KeyboardWidget(
-            helpText: assetLoadedText,
-            bindings: _getShortcuts(),
-            child: Scaffold(
-              body: Stack(
-                fit: StackFit.loose,
-                children: children,
-              ),
+          key: helpKey,
+          helpText: assetLoadedText,
+          bindings: _getShortcuts(),
+          child: Scaffold(
+            body: Stack(
+              fit: StackFit.loose,
+              children: children,
             ),
+          ),
         );
       }
     );

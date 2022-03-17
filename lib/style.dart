@@ -30,3 +30,12 @@ ThemeData defaultTheme = ThemeData(
     onPrimary: text,
   )
 );
+
+BoxDecoration rounded = const BoxDecoration(
+  shape: BoxShape.circle,
+    gradient: gradient,
+    boxShadow: [BoxShadow(
+        color: Colors.black12,
+        blurRadius: 6, spreadRadius: 2,
+    )],
+);

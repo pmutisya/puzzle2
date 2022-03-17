@@ -147,7 +147,7 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
                 child: BackButton(
                   color: Colors.white,
                   onPressed: (){
-                    Provider.of<AppController>(context).showResults();
+                    Provider.of<AppController>(context, listen: false).showResults();
                 },
             ),
               ))
