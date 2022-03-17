@@ -9,7 +9,7 @@ import 'move_model.dart';
 ///A test widget to run simulated games only
 class GameTester extends StatefulWidget {
   final bool autoplay;
-  const GameTester({this.autoplay = false, Key? key}) : super(key: key);
+  const GameTester({this.autoplay = true, Key? key}) : super(key: key);
 
   @override
   _GameTesterState createState() => _GameTesterState();
@@ -23,23 +23,24 @@ class _GameTesterState extends State<GameTester> with GameListener {
   static const Duration moveDuration = Duration(milliseconds: 250);
   List<Move> animatingMoves = [];
 
-  bool shuffling = true;
+  bool shuffling = false;
 
   @override
   void initState() {
     super.initState();
 
     gameBoardKey = GlobalKey<GameBoardState>();
-    game = Game(16, interactive: false);
+    game = Game(16, interactive: true);
     movesModel = game.movesModel;
     game.reset();
 
     game.addGameListener(this);
-    _autoplay();
+    // _autoplay();
   }
 
   @override
   void moveStarted(){}
+
   @override
   void moveComplete(int score) {
     setState(() {
@@ -54,17 +55,17 @@ class _GameTesterState extends State<GameTester> with GameListener {
         }
         else {
           shuffling = true;
-          _autoplay();
+          // _autoplay();
         }
       }
     });
   }
 
-  Future<void> _autoplay() async {
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      shuffle();
-    });
-  }
+  // Future<void> _autoplay() async {
+  //   Future.delayed(const Duration(milliseconds: 1000), () {
+  //     shuffle();
+  //   });
+  // }
   @override
   void gameRestarted() {}
 
@@ -80,18 +81,24 @@ class _GameTesterState extends State<GameTester> with GameListener {
   }
 
   void shuffle({bool animate = true}) {
-    animatingMoves = movesModel.shuffle(40, animate: animate);
+    print('shuffling');
+    animatingMoves = movesModel.shuffle(8, animate: animate);
+    print('done::');
+    for (Move move in animatingMoves) {
+      print('\t$move');
+    }
     doNextMove();
   }
 
   void shuffleImmediately() {
-    movesModel.shuffleImmediately(40);
+    movesModel.shuffleImmediately(4);
     gameBoardKey.currentState!.setState(() {
     });
   }
 
   void reverseSolve() {
     animatingMoves = movesModel.reverseMoves();
+    shuffling = true;
     doNextMove();
   }
 

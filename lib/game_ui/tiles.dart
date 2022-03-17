@@ -36,7 +36,7 @@ class TileWidget extends StatelessWidget {
           margin: EdgeInsets.all(margin),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(radius)),
-            color: tile.isVisible? tile.isCorrect? Colors.greenAccent :
+            color: tile.isVisible? tile.isCorrect? Colors.indigo :
               tile.canMove? Colors.lightBlueAccent : Colors.amberAccent : Colors.transparent,
             boxShadow: tile.isVisible? const [BoxShadow(color: Colors.black12, offset: Offset(2, 2))] : [],
           ),

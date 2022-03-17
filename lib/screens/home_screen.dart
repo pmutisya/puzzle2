@@ -6,6 +6,7 @@ import 'package:keymap/keymap.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 import 'package:puzzle2/game_autoplay.dart';
+import 'package:puzzle2/game_ui/sky.dart';
 import 'package:puzzle2/move_model.dart';
 import 'package:puzzle2/style.dart';
 
@@ -81,13 +82,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         bool isLandscapeLarge = constraints.maxWidth > 800;
 
         List<Widget> children = [
-          Container(
-            width: double.infinity, height: double.infinity,
-            decoration: const BoxDecoration(
-              gradient: bgGradient,
-                // color: darkBG
-            ),
-          ),
+          const SkyCanvas(),
+          // Container(
+          //   width: double.infinity, height: double.infinity,
+          //   decoration: const BoxDecoration(
+          //     gradient: bgGradient,
+          //   ),
+          // ),
           Padding(
             padding: EdgeInsets.all(ss/10),
             child: Transform.scale(

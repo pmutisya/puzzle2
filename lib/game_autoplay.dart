@@ -90,7 +90,9 @@ class _AutoPlayerState extends State<AutoPlayer> with GameListener {
 
   void shuffle({bool animate = true}) {
     animatingMoves = movesModel.shuffle(40, animate: animate);
-    doNextMove();
+    Future.delayed(const Duration(seconds: 4), () {
+      doNextMove();
+    });
   }
 
   void shuffleImmediately() {

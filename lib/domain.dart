@@ -226,16 +226,26 @@ class Game {
     return (p.y < rows - 1);
   }
 
-  bool canTap(Tile tile) {
+  bool canTap(Tile tile, {bool restrict = false, bool vertical = true}) {
     Point<int> loc = getLocation(tile.position);
-    return ((loc.x == zeroLocation.x) && (loc.y != zeroLocation.y)) ||
+    if (restrict) {
+      if (vertical) {
+        return (loc.x == zeroLocation.x && loc.y != zeroLocation.y);
+      }
+      else {
+        return (loc.y == zeroLocation.y && loc.x != zeroLocation.x);
+      }
+    }
+    else {
+      return ((loc.x == zeroLocation.x) && (loc.y != zeroLocation.y)) ||
         ((loc.y == zeroLocation.y) && (loc.x != zeroLocation.x));
+    }
   }
 
-  List<Tile> getLegalTiles() {
+  List<Tile> getLegalTiles({bool restrict = false, bool vertical = true}) {
     List<Tile> tiles = [];
     for (Tile tile in _tiles) {
-      if (canTap(tile)) {
+      if (canTap(tile, restrict: restrict, vertical: vertical)) {
         tiles.add(tile);
       }
     }

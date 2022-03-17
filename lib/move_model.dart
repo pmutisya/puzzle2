@@ -46,16 +46,19 @@ class MoveModel {
   List<Move> shuffle(int numberOfShuffles, {bool animate = false}) {
     Point<int> oldZeroPosition = const Point<int>(-1, -1); //don't reverse moves sequentially
 
+    bool vertical = random.nextBool();
+
     List<Move> moves = [];
     for (int k = 0; k < numberOfShuffles; k++) {
       List<Tile> possibleTiles = [];
-      List<Tile> legalTiles = _game.getLegalTiles();
+      List<Tile> legalTiles = _game.getLegalTiles(restrict: true, vertical: vertical);
       for (Tile tile in legalTiles) {
         if (tile.location != oldZeroPosition) {
           possibleTiles.add(tile);
         }
       }
       Tile tappedTile = possibleTiles[random.nextInt(possibleTiles.length)];
+      vertical = !vertical;
       oldZeroPosition = _game.zeroLocation;
       Move move = _game.getMoveFromTap(tappedTile)!;
       moves.add(move);
