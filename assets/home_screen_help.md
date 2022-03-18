@@ -1,5 +1,5 @@
 
-## TILES
+# TILES
 Welcome to Tiles, a sliding puzzle game. 
 - To change the game theme, click on the floating game below
 - To play the size game you want (3x3, 4x4 or 5x5) click on the appropriate circle.

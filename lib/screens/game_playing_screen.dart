@@ -119,7 +119,7 @@ class _GamePlayingScreenState extends State<GamePlayingScreen> with
         KeyAction(LogicalKeyboardKey.keyK, 'Move the square below up', moveUp),
         KeyAction(LogicalKeyboardKey.keyI, 'Move the square above down', moveDown),
         KeyAction(LogicalKeyboardKey.keyB, 'Go back home', (){
-          Provider.of<AppController>(context).showResults();
+          Provider.of<AppController>(context, listen: false).showResults();
         },),
       ],
       child: Scaffold(

@@ -35,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 10000));
-    themeTimer = Timer.periodic(const Duration(seconds: 8), (timer) {
+    themeTimer = Timer.periodic(const Duration(seconds: 10), (timer) {
       Provider.of<AppController>(context, listen: false).shiftTheme();
     });
 
@@ -82,6 +82,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   List<KeyAction> _getShortcuts() {
     return [
+      KeyAction(LogicalKeyboardKey.keyT, 'Change the game theme', (){
+        Provider.of<AppController>(context, listen: false).shiftTheme();
+      }),
       KeyAction(LogicalKeyboardKey.digit3, 'Start a 3x3 Game', () {
         startGameWithSize(9);
       }),
@@ -95,8 +98,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
   @override
   Widget build(BuildContext context) {
+    MediaQueryData media = MediaQuery.of(context);
     return LayoutBuilder(
       builder: (context, constraints) {
+        double titleHeight = constraints.maxHeight/5;
+        double top = max(media.padding.top + 10, 30);
+        double titleBottom = titleHeight + top;
         double ss = min(constraints.maxWidth, constraints.maxHeight);
         bool isLandscapeLarge = constraints.maxWidth > 800;
 
@@ -108,7 +115,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           //     gradient: bgGradient,
           //   ),
           // ),
-          Padding(
+          Container(
+            alignment: Alignment.center,
+            width: double.infinity, height: double.infinity,
             padding: EdgeInsets.all(ss/10),
             child: Transform.scale(
               scale: scaleTween.evaluate(_controller),
@@ -120,14 +129,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           Positioned(
-            left: 0, top: 30,
+            left: 0, top: top,
             child: Container(
                 padding: const EdgeInsets.all(10.0),
-                height: constraints.maxHeight/5, width: constraints.maxWidth - 40,
+                height: titleHeight, width: constraints.maxWidth - 40,
                 child: Letters(buildWord(tiles))),
           ),
           Positioned(
-            right: 20, top: 30,
+            right: 20, top: titleBottom,
             child: Tooltip(
               message: 'Show keyboard shortcuts',
               child: HoverButton(
@@ -139,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           ),
           Positioned(
-            left: 0, bottom: 20,
+            left: 0, bottom: max(media.padding.bottom+20, 20),
             child: Container(
               width: constraints.maxWidth,
               height: 100,
@@ -178,12 +187,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               ),
             ),
           )
-          :Positioned(left: 10, top: 30,
+          :Positioned(left: 10, top: titleBottom,
             child: HoverButton(
               onTap: () {
                 RenderBox overlay = Overlay.of(context)!.context.findRenderObject()! as RenderBox;
                 showMenu(context: context, position:
-                RelativeRect.fromSize(const Offset(80, 10) & const Size(80, 80), overlay.size),
+                RelativeRect.fromSize(Offset(80, titleBottom) & const Size(80, 80), overlay.size),
                     items: [
                       PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
                         label: Text('3x3 ${Scores.instance[3]}', style: const TextStyle(color: text),), onPressed: (){},),),
@@ -203,6 +212,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           ),
         ];
         return KeyboardWidget(
+          columnCount: 2,
           key: helpKey,
           helpText: assetLoadedText,
           bindings: _getShortcuts(),

@@ -27,7 +27,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  keymap: 0.0.8
+  keymap: 0.0.81
   flutter_svg: 1.0.3
   line_icons: 2.0.1
   logging: 1.0.2
