@@ -156,10 +156,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 mainAxisSize: MainAxisSize.max,
-                children: const [
-                  StartButton(3, selected: false,),
-                  StartButton(4, selected: false,),
-                  StartButton(5, selected: false,),
+                children: [
+                  StartButton(3, _controller, selected: false,),
+                  StartButton(4, _controller, selected: false,),
+                  StartButton(5, _controller, selected: false,),
                 ],
               ),
             ),
@@ -188,25 +188,28 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             ),
           )
           :Positioned(left: 10, top: titleBottom,
-            child: HoverButton(
-              onTap: () {
-                RenderBox overlay = Overlay.of(context)!.context.findRenderObject()! as RenderBox;
-                showMenu(context: context, position:
-                RelativeRect.fromSize(Offset(80, titleBottom) & const Size(80, 80), overlay.size),
-                    items: [
-                      PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
-                        label: Text('3x3 ${Scores.instance[3]}', style: const TextStyle(color: text),), onPressed: (){},),),
-                      PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
-                        label: Text('4x4 ${Scores.instance[4]}', style: const TextStyle(color: text),), onPressed: (){},),),
-                      PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
-                        label: Text('5x5 ${Scores.instance[5]}', style: const TextStyle(color: text),), onPressed: (){},),),
-                    ]);
-              },
-              child: Row(
-                children: const [
-                  Icon(LineIcons.award),
-                  // Text('High Scores')
-                ],
+            child: Tooltip(
+              message: 'Show best times',
+              child: HoverButton(
+                onTap: () {
+                  RenderBox overlay = Overlay.of(context)!.context.findRenderObject()! as RenderBox;
+                  showMenu(context: context, position:
+                  RelativeRect.fromSize(Offset(80, titleBottom) & const Size(80, 80), overlay.size),
+                      items: [
+                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                          label: Text('3x3 ${Scores.instance[3]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                          label: Text('4x4 ${Scores.instance[4]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                        PopupMenuItem(child: TextButton.icon(icon: const Icon(LineIcons.crown, color: yellow,),
+                          label: Text('5x5 ${Scores.instance[5]}', style: const TextStyle(color: text),), onPressed: (){},),),
+                      ]);
+                },
+                child: Row(
+                  children: const [
+                    Icon(LineIcons.award),
+                    // Text('High Scores')
+                  ],
+                ),
               ),
             ),
           ),
@@ -232,9 +235,12 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 class StartButton extends StatefulWidget {
   final int size;
   final bool selected;
+  final String tooltip;
+  final AnimationController controller;
 
-  const StartButton(this.size,
+  const StartButton(this.size, this.controller,
     {this.selected = false, Key? key}) :
+      tooltip = 'Start a $size x $size game',
     assert(size == 3 || size == 4 || size == 5, "Choose 3x3, 4x4 or 5x5"),
     super(key: key);
 
@@ -280,22 +286,25 @@ class _StartButtonState extends State<StartButton> with SingleTickerProviderStat
               hovering = v;
           });
         },
-        child: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: (hovering || widget.selected) ? gradient : null,
-            color: hovering? null : bg,
-            boxShadow: [BoxShadow(
-              color: hovering? Colors.lightBlueAccent : Colors.black12,
-              blurRadius: 6, spreadRadius: 2,
-            )],
-            border: Border.all(width: 2,
-              color: hovering? Colors.lightBlueAccent : Colors.transparent),
+        child: Tooltip(
+          message: widget.tooltip,
+          child: Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: (hovering || widget.selected) ? gradient : null,
+              color: hovering? null : colorTween.evaluate(widget.controller),
+              boxShadow: [BoxShadow(
+                color: hovering? Colors.lightBlueAccent : Colors.black12,
+                blurRadius: 6, spreadRadius: 2,
+              )],
+              border: Border.all(width: 2,
+                color: hovering? Colors.lightBlueAccent : Colors.transparent),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 18),
+            child: Text('$size x $size',
+              style: const TextStyle(color: text, //hovering || widget.selected ? text : disabledText,
+                  fontWeight: FontWeight.bold),)
           ),
-          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 18),
-          child: Text('$size x $size',
-            style: const TextStyle(color: text, //hovering || widget.selected ? text : disabledText,
-                fontWeight: FontWeight.bold),)
         ),
       )
     );

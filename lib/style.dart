@@ -14,6 +14,8 @@ const LinearGradient bgGradient = LinearGradient(begin: Alignment.topCenter,
     stops: [0, .75, .99],
     end: Alignment.bottomCenter, colors: [Colors.black, darkBG, highlight]);
 
+final ColorTween colorTween = ColorTween(begin: bg, end: Colors.lightBlueAccent);
+
 ThemeData defaultTheme = ThemeData(
   brightness: Brightness.dark,
   fontFamily: 'Poppins',
